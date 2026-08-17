@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Render HTML ke Gambar & Unduh (gabungan)</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Tailwind CSS CDN -->
+  <!-- <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet"> -->
+
+  <!-- Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@400;600&family=Quicksand:wght@500&display=swap"
+    rel="stylesheet">
+
+  <!-- html-to-image library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+  <!-- SweetAlert CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+</head>
+
+<body>
+
+  <!-- <a href="fitur_baru.html">fitur baru</a> -->
+  <!-- <a href="firut_baru2.html">fitur baru 2</a> -->
+  <!-- <a href="ootdcowo.html">fitur baru 3</a> -->
+  <!-- <a href="fitur_baru_cw.html">fitur baru cw</a> -->
+  <a href="fitur_baru_cw_tailwidn.html">outfit cw</a> ||
+  <a href="fitur_baru_cowok.html">outfit cowok</a>
+
+  <!-- sama seperti  fitur ganti template colom. aku ingin ketika salahsatu tombol di dalam header ini di pilih. menghasilkan tampilan yang beda, yaitu: -->
+  <header>
+    <nav style="margin-bottom:10px;">
+      <button id="1-no-link" class="layout-btn active">1 nomor link</button> <!-- jadikan tombol ini defautl aktif. -->
+      <button id="many-no-link" class="layout-btn">banyak nomor link</button>
+      <!-- ? jika ini aktif, tampilannnya tetap seperti ini yaitu dengan banyak nomor link  -->
+    </nav>
+  </header>
+
+
+  <!-- tombol ganti template colom -->
+  <div style="margin-bottom:10px; display: flex; gap: 8px; align-items: center;">
+    <label for="layoutSelect" style="font-size: 14px; color: #333;"></label>
+    <select id="layoutSelect" class="layout-select" style="padding: 8px 12px; border: 2px solid #1d4ed8; border-radius: 6px; color: #1d4ed8; background: #fff;">
+      <option value="muncul9">Muncul 9</option>
+      <option value="muncul8">Muncul 8</option>
+      <option value="muncul8-2kolom">Muncul 8 2kolom</option>
+      <option value="muncul6-2kolom">Muncul 6, 2kolom</option>
+      <option value="muncul6-3kolom">Muncul 6, 3kolom</option>
+      <option value="muncul4">Muncul 4</option>
+      <option value="muncul3">Muncul 3</option>
+    </select>
+    <button id="resetBtn" class="layout-btn" style="background-color: #dc3545; border-color: #dc3545; color: white;">Reset All</button>
+  </div>
+  <!-- Control panel untuk warna -->
+  <div class="color-controls">
+    <h3>Warna Background Harga:</h3>
+    <input type="color" id="hargaColor" value="#4C0094">
+    <span class="color-hint">Klik gambar untuk ambil warna dari gambar</span>
+  </div>
+
+  <div id="wadah"></div>
+  <div id="formInputs" class="inputs"></div>
+
+  <!-- SweetAlert JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // Variabel global untuk menyimpan warna yang dipilih
+    let selectedColor = "#4C0094";
+
+    // Mode single vs many (default sesuai permintaan: 1-no-link aktif)
+    let noLinkMode = 'single'; // 'single' atau 'many'
+
+    // --- tampilkan default 8 elemen saat halaman pertama kali dibuka ---
+    window.addEventListener('DOMContentLoaded', () => {
+      renderLayout(8, 4); // default: 8 elemen, 4 kolom
+      updateActiveButton('muncul8'); // Set tombol 8 sebagai aktif
+      updateModeButton('1-no-link'); // set mode button active: 1-no-link
+      setupColorControls(); // Setup kontrol warna
+    });
+
+    // Setup kontrol warna
+    function setupColorControls() {
+      // Event listener untuk input warna
+      document.getElementById('hargaColor').addEventListener('input', function (e) {
+        selectedColor = e.target.value;
+        applyColorToAllHarga();
+      });
+    }
+
+    // Fungsi untuk menghitung kecerahan warna (0-255)
+    function getBrightness(hexColor) {
+      // Hilangkan # jika ada
+      hexColor = hexColor.replace('#', '');
+
+      // Konversi hex ke RGB
+      const r = parseInt(hexColor.substr(0, 2), 16);
+      const g = parseInt(hexColor.substr(2, 2), 16);
+      const b = parseInt(hexColor.substr(4, 2), 16);
+
+      // Hitung kecerahan menggunakan formula perceptive luminance
+      return (r * 299 + g * 587 + b * 114) / 1000;
+    }
+
+    // Fungsi untuk menentukan warna teks berdasarkan kecerahan background
+    function getTextColorBasedOnBackground(backgroundColor) {
+      const brightness = getBrightness(backgroundColor);
+
+      // Jika background terang, gunakan teks gelap, dan sebaliknya
+      return brightness > 128 ? '#000000' : '#FFFFFF';
+    }
+
+    // Fungsi untuk menerapkan warna ke semua elemen harga
+    function applyColorToAllHarga() {
+      const textColor = getTextColorBasedOnBackground(selectedColor);
+
+      document.querySelectorAll('.harga-wrapper').forEach(el => {
+        el.style.backgroundColor = selectedColor;
+        el.style.color = textColor; 
+      });
+    }
+
+    // Fungsi untuk mengambil warna dari gambar yang diklik
+    function getColorFromImage(img, x, y, callback) {
+      // Buat canvas sementara
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Set ukuran canvas sesuai dengan gambar
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      // Gambar ke canvas
+      ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+
+      // Ambil data pixel dari posisi yang diklik
+      const pixelData = ctx.getImageData(x, y, 1, 1).data;
+
+      // Konversi RGB ke HEX
+      const r = pixelData[0].toString(16).padStart(2, '0');
+      const g = pixelData[1].toString(16).padStart(2, '0');
+      const b = pixelData[2].toString(16).padStart(2, '0');
+
+      const hexColor = `#${r}${g}${b}`;
+
+      // Panggil callback dengan warna yang didapat
+      callback(hexColor);
+    }
+
+    // Helper render layout
+    function renderLayout(count, cols) {
+      const wadah = document.getElementById('wadah');
+      const formInputs = document.getElementById('formInputs');
+
+      // Tentukan aspect ratio berdasarkan jumlah elemen
+      let aspectRatio = '4 / 5'; //'1 / 1'; // Default untuk 9 elemen
+      if (count === 8) {
+        aspectRatio = '4 / 5'; // Untuk 8 elemen
+      }
+
+      // Hitung rows berdasarkan count dan cols
+      const rows = Math.ceil(count / cols);
+
+      // Hitung warna teks berdasarkan background
+      const textColor = getTextColorBasedOnBackground(selectedColor);
+
+      // --- Build capture grid ---
+      let html = /* html */ `<div id="capture" class="wadah-capture">
+      
+      <div class="capture" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 1fr); aspect-ratio: ${aspectRatio};">`;
+
+      // Dalam renderLayout, gunakan style inline:
+      for (let i = 0; i < count; i++) {
+        (i < 4) ? html += '<div class="text-center">' : html += '<div class="text-center padding-gambar-top">'
+
+        html += /*html*/ `
+        <div class="img-wrap">
+        <img class="" 
+          src="${count === 8 && cols === 4 ? 'celana.jpg' : count === 4 ? 'img/aset_cw/4-2kolom1.png' : count === 3 ? 'img/aset_cw/3-1kolom1.png' : count === 6 && cols === 2 ? 'img/aset_cw/6-2kolom1.png' : count === 6 && cols === 3 ? 'img/aset_cw/6-3kolom2.png' :  count === 8 && cols === 2 ? 'img/aset_cw/8-2kolom3.png' : 'baju.png'}" 
+          alt="item-${i}"
+          style="${count === 8 ? 'transform: scale(0.95); transform-origin: center; width: 100%; height: auto;' : 'width: 100%; height: auto;'}">
+      </div>
+
+        <div class="meta" style="
+          display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; box-sizing: border-box !important; margin: 0 auto !important; padding: 0 !important; /* background-color: yellow; */"> 
+          <div class="link" style="
+            display: inline-block !important; white-space: nowrap !important; margin: 0 auto !important; padding: 0 !important;    text-align: center !important;">Link. <span class="no-val link">${i + 1}</span>z
+          </div>
+          <span class="harga-wrapper" style="
+            background-color: ${selectedColor} !important; color: ${textColor} !important; margin: 2px auto 0 auto !important; text-align: center !important;">Rp. <span class="harga-val">50</span>rb</span>
+          </div>
+        </div>
+        `;
+      }
+
+      html += /* html */ `</div> </div>`;
+      html += /* html */ `<button class="download-btn" id="download-btn">Unduh Gambar (PNG)</button>`;
+      wadah.innerHTML = html;
+
+      // Terapkan mode (tampilkan/ sembunyikan elemen) setelah render
+      applyNoLinkModeToCapture();
+
+      // Setup event listener untuk gambar yang bisa diklik untuk mengambil warna
+      document.querySelectorAll('.img-wrap img').forEach(img => {
+        img.addEventListener('click', function (e) {
+          // Dapatkan posisi klik relatif terhadap gambar
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          // Skala koordinat ke ukuran asli gambar
+          const scaleX = this.naturalWidth / rect.width;
+          const scaleY = this.naturalHeight / rect.height;
+
+          const naturalX = Math.floor(x * scaleX);
+          const naturalY = Math.floor(y * scaleY);
+
+          // Pastikan gambar sudah dimuat
+          if (this.complete) {
+            getColorFromImage(this, naturalX, naturalY, function (color) { 
+              selectedColor = color;
+              applyColorToAllHarga();
+              // Update input warna
+              document.getElementById('hargaColor').value = color;
+            });
+          } else {
+            // Jika gambar belum dimuat, tunggu sampai selesai
+            this.addEventListener('load', function () {
+              getColorFromImage(this, naturalX, naturalY, function (color) {
+                selectedColor = color;
+                applyColorToAllHarga();
+                document.getElementById('hargaColor').value = color;
+              });
+            });
+          }
+        });
+      });
+
+      // --- Build form inputs ---
+      let formHtml = '';
+
+      for (let i = 0; i < count; i++) {
+        formHtml += /* html */ `
+          <div>
+            <!-- <label>Gambar ${i + 1}</label> -->
+            <label id="file-label-${i}" class="file-label">
+              Pilih File
+              <input type="file" accept="image/*" onchange="handleFileChange(${i}, event)">
+            </label>
+
+            <div class="form-row no-row">
+              <label>No:</label>
+              <input type="text" placeholder="Tulis nomor..." 
+                    oninput="updateNo(${i}, this.value)">
+            </div>
+            
+            <div class="form-row">
+              <label>Harga:</label>
+              <input type="text" placeholder="Tulis harga..." 
+                oninput="updateHarga(${i}, this.value)">
+            </div>
+          </div>
+        `;
+      }
+
+      // grid-column: 1 / span 3;
+      formHtml += /*html*/ `
+        <div class="form-1-no-link" style="grid-column: ${cols === 4 ? '1 / span 4' : cols === 2 ? '1 / span 2' : '1 / span 3'};"> 
+          <input type="text" id="single-no-link-input" name="" placeholder="1 nomor link">
+        </div>
+      `;
+
+
+      formInputs.className = 'inputs ' + (cols === 4 ? 'grid-4' : cols === 2 ? 'grid-2' : 'grid-3');
+      formInputs.innerHTML = formHtml;
+
+      // Hook up single-no-link input in form to sync to capture element
+      const singleFormInput = document.getElementById('single-no-link-input');
+      if (singleFormInput) {
+        singleFormInput.addEventListener('input', function (e) {
+          const v = e.target.value || '1';
+          // Update semua nomor di capture grid ketika 1-no-link aktif
+          if (noLinkMode === 'single') {
+            document.querySelectorAll('.no-val').forEach(span => {
+              span.textContent = v;
+            });
+          }
+        });
+      }
+
+      // ----------------- html-to-image untuk download -----------------
+      const downloadBtn = document.getElementById('download-btn');
+      downloadBtn.addEventListener('click', async function () {
+        const el = document.getElementById('capture');
+        if (!el) return alert('Container tidak tersedia');
+
+        // Show loading
+        const originalText = this.textContent;
+        this.textContent = 'Memproses...';
+        this.disabled = true;
+
+        try {
+          // Tunggu font dan gambar loading
+          if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+          // Tunggu semua gambar selesai load
+          await Promise.all(
+            Array.from(document.images).map(img => {
+              if (img.complete) return Promise.resolve();
+              return new Promise((resolve) => {
+                img.onload = resolve;
+                img.onerror = resolve;
+              });
+            })
+          );
+
+          // Gunakan html-to-image dengan kualitas tinggi
+          const dataUrl = await htmlToImage.toPng(el, {
+            quality: 1,
+            pixelRatio: 3, // Kualitas tinggi
+            width: el.offsetWidth * 3,
+            height: el.offsetHeight * 3,
+            style: {
+              transform: 'scale(3)',
+              transformOrigin: 'top left'
+            },
+            backgroundColor: '#ffffff'
+          });
+
+          // Download gambar
+          const link = document.createElement('a');
+          link.download = `capture_${count}.png`;
+          link.href = dataUrl;
+          link.click();
+
+        } catch (error) {
+          console.error('Error generating image:', error);
+          alert('Gagal mengunduh gambar. Coba lagi.');
+        } finally {
+          // Restore button state
+          this.textContent = originalText;
+          this.disabled = false;
+        }
+      });
+
+      // Di akhir fungsi renderLayout, tambahkan:
+      const resetBtn = document.getElementById('resetBtn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', confirmReset);
+      }
+
+      // Pastikan mode di-apply di formInputs juga
+      applyNoLinkModeToForm();
+    }
+
+    // Fungsi untuk mengupdate tombol aktif (layout)
+    function updateActiveButton(activeId) {
+      // Hapus class active dari semua tombol
+      document.querySelectorAll('.layout-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Tambahkan class active ke tombol yang diklik
+      const el = document.getElementById(activeId);
+      if (el) el.classList.add('active');
+    }
+
+    // Fungsi khusus untuk mode button (1-no-link / many-no-link)
+    function updateModeButton(activeId) {
+      // clear both
+      const ids = ['1-no-link', 'many-no-link'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+      const active = document.getElementById(activeId);
+      if (active) active.classList.add('active');
+    }
+
+    // event listeners untuk tombol mode
+    document.addEventListener('click', function (e) {
+      if (!e.target) return;
+      if (e.target.id === '1-no-link') {
+        setNoLinkMode('single');
+      } else if (e.target.id === 'many-no-link') {
+        setNoLinkMode('many');
+      }
+    });
+ 
+    function setNoLinkMode(mode) {
+      noLinkMode = mode === 'single' ? 'single' : 'many';
+      updateModeButton(noLinkMode === 'single' ? '1-no-link' : 'many-no-link');
+
+      // Apply mode to currently rendered DOM
+      applyNoLinkModeToCapture();
+      applyNoLinkModeToForm();
+    }
+
+    // Apply mode to capture (show/hide elements inside #capture)
+    function applyNoLinkModeToCapture() {
+      const capture = document.getElementById('capture');
+      if (!capture) return;
+
+      // Jika mode single, update semua nomor dengan nilai dari input
+      if (noLinkMode === 'single') {
+        const singleInput = document.getElementById('single-no-link-input');
+        if (singleInput) {
+          const value = singleInput.value || '1';
+          document.querySelectorAll('.no-val').forEach(span => {
+            span.textContent = value;
+          });
+        }g
+      }
+    }
+
+    // Apply mode to form inputs area (sembunyikan baris nomor jika single)
+    function applyNoLinkModeToForm() {
+      const formInputs = document.getElementById('formInputs');
+      if (!formInputs) return;
+
+      // hide/show rows for nomor
+      formInputs.querySelectorAll('.no-row').forEach(el => {
+        if (noLinkMode === 'single') {
+          el.classList.add('hidden');
+        } else {
+          el.classList.remove('hidden');
+        }
+      });
+
+      // show/hide the single form input
+      const singleForm = formInputs.querySelector('.form-1-no-link');
+      if (singleForm) {
+        if (noLinkMode === 'single') {
+          singleForm.style.display = 'flex';
+        } else {
+          singleForm.style.display = 'none';
+        }
+      }
+    }
+
+    // Gabungan update image + label
+    function handleFileChange(index, event) {
+      const label = document.querySelector(`#file-label-${index}`);
+      const file = event.target.files[0];
+
+      if (file) {
+        label.classList.add("selected");
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imgs = document.getElementById('capture').querySelectorAll('img');
+          if (imgs[index]) {
+            imgs[index].src = e.target.result;
+
+            // Setelah gambar diubah, pastikan event listener masih ada
+            imgs[index].addEventListener('click', function (e) {
+              const rect = this.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+
+              const scaleX = this.naturalWidth / rect.width;
+              const scaleY = this.naturalHeight / rect.height;
+
+              const naturalX = Math.floor(x * scaleX);
+              const naturalY = Math.floor(y * scaleY);
+
+              if (this.complete) {
+                getColorFromImage(this, naturalX, naturalY, function (color) {
+                  selectedColor = color;
+                  applyColorToAllHarga();
+                  document.getElementById('hargaColor').value = color;
+                });
+              } else {
+                this.addEventListener('load', function () {
+                  getColorFromImage(this, naturalX, naturalY, function (color) {
+                    selectedColor = color;
+                    applyColorToAllHarga();
+                    document.getElementById('hargaColor').value = color;
+                  });
+                });
+              }
+            });
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        label.classList.remove("selected");
+      }
+    }
+
+    // Update no (per item)
+    function updateNo(index, value) {
+      // Hanya update di mode many
+      if (noLinkMode === 'many') {
+        const nodes = document.getElementById('capture').querySelectorAll('.no-val');
+        if (nodes[index]) nodes[index].textContent = value || (index + 1);
+      }
+    }
+
+    // Update harga
+    function updateHarga(index, value) {
+      const nodes = document.getElementById('capture').querySelectorAll('.harga-val');
+      if (nodes[index]) nodes[index].textContent = value || '50';
+    }
+
+    // Layout selector
+    const layoutSelect = document.getElementById('layoutSelect');
+    if (layoutSelect) {
+      layoutSelect.addEventListener('change', function () {
+        const val = this.value;
+        switch (val) {
+          case 'muncul9':
+            renderLayout(9, 3); updateActiveButton('muncul9'); break;
+          case 'muncul8':
+            renderLayout(8, 4); updateActiveButton('muncul8'); break;
+          case 'muncul8-2kolom':
+            renderLayout(8, 2); updateActiveButton('muncul8-2kolom'); break;
+          case 'muncul6-2kolom':
+            renderLayout(6, 2); updateActiveButton('muncul6-2kolom'); break;
+          case 'muncul6-3kolom':
+            renderLayout(6, 3); updateActiveButton('muncul6-3kolom'); break;
+          case 'muncul4':
+            renderLayout(4, 2); updateActiveButton('muncul4'); break;
+          case 'muncul3':
+            renderLayout(3, 3); updateActiveButton('muncul3'); break;
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Set default select sesuai default render saat DOMContentLoaded (muncul8)
+      layoutSelect.value = 'muncul8';
+    }
+
+    // Fungsi untuk menampilkan konfirmasi reset
+    function confirmReset() {
+      Swal.fire({
+        title: 'Yakin mau reset?',
+        text: "Semua input gambar, nomor, dan harga akan dihapus!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Reset Semua!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          resetAllInputs();
+          Swal.fire(
+            'Berhasil!',
+            'Semua input telah direset.',
+            'success'
+          );
+        }
+      });
+    }
+
+    // Fungsi untuk reset semua input
+    function resetAllInputs() {
+      // Reset input file
+      document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.value = '';
+      });
+
+      // Reset label file
+      document.querySelectorAll('.file-label').forEach(label => {
+        label.classList.remove('selected');
+      });
+
+      // Reset input nomor
+      document.querySelectorAll('input[type="text"]').forEach((input, index) => {
+        if (input.placeholder && input.placeholder.includes('nomor')) {
+          input.value = '';
+          // jika this adalah per-item nomor, panggil updateNo
+          if (input.oninput && input.oninput.toString().includes('updateNo')) {
+            updateNo(index, '');
+          }
+        }
+      });
+
+      // Reset input harga
+      document.querySelectorAll('input[type="text"]').forEach((input, index) => {
+        if (input.placeholder && input.placeholder.toLowerCase().includes('harga')) {
+          input.value = '';
+          updateHarga(index, '');
+        }
+      });
+
+      // Reset warna ke default
+      selectedColor = '#4C0094';
+      document.getElementById('hargaColor').value = selectedColor;
+      applyColorToAllHarga();
+
+      // Reset gambar ke default
+      const imgs = document.querySelectorAll('#capture img');
+      imgs.forEach((img, index) => {
+        const count = imgs.length;
+        img.src = count === 8 ? 'celana.jpg' : 'baju.png';
+      });
+
+      // Reset single-no-link input
+      const singleInput = document.getElementById('single-no-link-input');
+      if (singleInput) {
+        singleInput.value = '';
+        // Update semua nomor jika mode single
+        if (noLinkMode === 'single') {
+          document.querySelectorAll('.no-val').forEach(span => {
+            span.textContent = '1';
+          });
+        }
+      }
+    }
+
+
+    
+  </script>
+  <script src="img/cek/color-manual.js"></script>
+</body>
+
+</html>

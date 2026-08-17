@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tombol Glow Unyu - TinyColor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
+<style>
+  body {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 50px;
+    background: #f0f0f5;
+  }
+  h1 { color: #ff66a3; margin-bottom: 12px; }
+  p { color: #666; font-size: 0.9rem; margin-bottom: 24px; }
+
+  input, select {
+    padding: 8px 12px;
+    margin: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .btns {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .btn {
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    transition: all 0.25s ease;
+  }
+
+  /* Animasi gradient glow */
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -50%;
+    width: 200%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(20px);
+    animation: moveGradient 5s linear infinite;
+  }
+
+  @keyframes moveGradient {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(50%); }
+    100% { transform: translateX(0); }
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+    opacity: 0.95;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+
+<h1>🌟 Tombol Glow Unyu</h1>
+<p>Pilih warna dasar & skema → tombol akan glow otomatis!</p>
+
+<input type="text" id="colorInput" value="#0284c7">
+<select id="modeSelect">
+  <option value="complementary">Complementary</option>
+  <option value="analogous">Analogous</option>
+  <option value="triadic">Triadic</option>
+  <option value="tetradic">Tetradic</option>
+</select>
+
+<div class="btns">
+  <button class="btn" id="btn1">✨ Tombol 1</button>
+  <button class="btn" id="btn2">💖 Tombol 2</button>
+</div>
+
+<script>
+const input = document.getElementById('colorInput');
+const select = document.getElementById('modeSelect');
+const btn1 = document.getElementById('btn1');
+const btn2 = document.getElementById('btn2');
+
+function generatePalette(hex, mode){
+  let base = tinycolor(hex);
+  let colors = [base.toHexString()];
+
+  switch(mode){
+    case 'complementary':
+      colors.push(base.complement().toHexString());
+      break;
+    case 'analogous':
+      colors.push(...base.analogous().slice(1,3).map(c=>c.toHexString()));
+      break;
+    case 'triadic':
+      colors.push(...base.triad().slice(1,3).map(c=>c.toHexString()));
+      break;
+    case 'tetradic':
+      colors.push(...base.tetrad().slice(1,4).map(c=>c.toHexString()));
+      break;
+  }
+
+  // Tombol 2 warna
+  if(colors.length>=2){
+    btn1.style.background = `linear-gradient(90deg, ${colors[0]}, ${colors[1]})`;
+    btn1.style.boxShadow = `0 5px 20px ${colors[0]}80, 0 5px 20px ${colors[1]}80`;
+    btn1.style.setProperty('--btn-gradient', `linear-gradient(90deg, ${colors[0]}, ${colors[1]})`);
+  }
+
+  // Tombol 3 warna
+  if(colors.length>=3){
+    btn2.style.background = `linear-gradient(90deg, ${colors[0]}, ${colors[1]}, ${colors[2]})`;
+    btn2.style.boxShadow = `0 5px 20px ${colors[0]}80, 0 5px 20px ${colors[1]}80, 0 5px 20px ${colors[2]}80`;
+    btn2.style.setProperty('--btn-gradient', `linear-gradient(90deg, ${colors[0]}, ${colors[1]}, ${colors[2]})`);
+  }
+}
+
+// generate pertama kali
+generatePalette(input.value, select.value);
+
+// update otomatis saat user ganti
+input.addEventListener('input', () => generatePalette(input.value, select.value));
+select.addEventListener('change', () => generatePalette(input.value, select.value));
+</script>
+
+</body>
+</html>

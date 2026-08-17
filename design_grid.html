@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OUTFIT GRID </title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Arial', 'Helvetica', 'sans-serif'],
+            serif: ['Georgia', '"Times New Roman"', 'Times', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- html-to-image library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+
+  <style>
+    /* Hanya properti yang tidak bisa dikonversi ke Tailwind */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .product-image {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      transform: translateZ(0);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Untuk rendering yang lebih baik */
+    #outfit-container {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+    /* Styling untuk input range */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 5px;
+      background: #d1d5db;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Style untuk kontainer gambar */
+    .section-inner > .img-box {
+      position: relative !important;
+      transition: transform 0.1s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-700 font-sans">
+  <a href="index.html" class="text-white">kembali</a><span class="text-white">||</span> 
+  <a href="fitur_baru_cowok.html" class="inline-block text-white p-4">ootd cowok</a> <span class="text-white">||</span> 
+  <a href="design_grid.html" class="inline-block text-white p-4">design-grid</a><span class="text-white">||</span> 
+  <a href="baju-baris.html" class="inline-block text-white p-4">baju baris</a>
+
+  <!-- Render container (offscreen) -->
+  <div id="render-container" class="black" aria-hidden="true"></div>
+
+  <!-- Container khusus untuk rendering -->
+  <div id="outfit-container" class="p-2 py-2 px-1 w-full flex items-center justify-center">
+    <main id="grid-root"
+      class="w-screen aspect-[4/5] max-w-[448px] bg-black p-[7px] grid grid-cols-[1fr_2fr] gap-2"
+      style="box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5); grid-auto-rows: 1fr;">
+
+      <!-- Top Left -->
+      <section id="desk-cowo"
+        class="card bg-white rounded-xl p-4 flex items-center justify-center relative overflow-hidden flex-col text-center">
+        <div class="section-inner">
+          <p
+            class="bio-kapel absolute top-3 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs py-0.5 px-2 rounded-lg whitespace-nowrap">
+            LINK NO. <span id="bio-cowo"></span></p>
+          <div class="mt-12">
+            <h2 class="title-stencil font-serif text-lg leading-none mb-1">COWO</h2>
+            <p class="price text-sm">Rp.<span id="harga-cowo"></span></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Top Right -->
+      <section id="top-right"
+        class="card rounded-xl flex items-center justify-center relative overflow-hidden bg-white">
+        <div class="section-inner">
+          <div class="img-box rounded-xl overflow-hidden flex items-center justify-center">
+            <!-- Gambar cowok -->
+            <img id="atasan-cowok" src="img/aset_cowok/kapel_cowok.jpg"
+              alt="Beige short sleeve button-up shirt dengan saku dada"
+              class="w-full h-full object-contain product-image" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Left -->
+      <section id="desk-cewe"
+        class="card bg-white rounded-xl p-4 flex items-center justify-center relative overflow-hidden flex-col text-center">
+        <div class="section-inner">
+          <p
+            class="bio-kapel absolute top-3 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs py-0.5 px-2 rounded-lg whitespace-nowrap">
+            LINK NO.<span id="bio-cewe"></span></p>
+          <div class="mt-12">
+            <h2 class="title-stencil font-serif text-lg leading-none mb-1">CEWE</h2>
+            <p class="price text-sm">Rp.<span id="harga-cewe"></span></p>
+          </div>
+          <p class="copyright absolute bottom-3 left-3 right-3 text-center text-[9px] text-black">copyright
+            @outfitghen.z
+          </p>
+        </div>
+      </section>
+
+      <!-- Bottom Right -->
+      <section id="bottom-right"
+        class="card rounded-xl flex items-center justify-center relative overflow-hidden bg-white">
+        <div class="section-inner">
+          <div class="img-box rounded-xl overflow-hidden flex items-center justify-center">
+            <!-- Gambar cewek -->
+            <img id="atasan-cewe" src="img/aset_cowok/kapel_cewek.jpg"
+              alt="Light pink long sleeve blouse dengan bordiran kerah & manset"
+              class="w-full h-full object-contain product-image" />
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Form untuk mengedit konten OUTFIT GRID -->
+  <form id="outfit-form"
+    class="flex flex-col gap-0.5 text-xs max-w-md mx-auto my-2 font-inherit bg-white p-3 rounded-lg"
+    style="box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+
+    <div class="grid grid-cols-2">
+      <!-- Input harga cowok -->
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <input id="input-harga-cowok" type="text" value="142.000" placeholder="Harga Cowok"
+          class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+      </div>
+
+      <!-- Input gambar cowok -->
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <input id="input-gambar-cowok" type="file" accept="image/*" placeholder="Ganti Gambar Cowok"
+          class="w-full text-xs px-2 rounded border border-dashed border-gray-300 bg-gray-50 cursor-pointer">
+      </div>
+
+
+      <!-- Input harga cewek -->
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <input id="input-harga-cewek" type="text" value="179.000" placeholder="Harga Cewek"
+          class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+      </div>
+
+      <!-- Input gambar cewek -->
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <input id="input-gambar-cewek" type="file" accept="image/*" placeholder="Ganti Gambar Cewek"
+          class="w-full text-xs px-2 rounded border border-dashed border-gray-300 bg-gray-50 cursor-pointer">
+      </div>
+    </div>
+
+    <!-- Pilihan untuk nomor link -->
+    <div class="flex items-center gap-0.5 m-0 min-h-7">
+      <label class="flex items-center text-xs">
+        <input id="nomor-link-sama" type="radio" name="nomor-link" value="sama" checked class="w-3.5 h-3.5 mr-1.5">
+        Nomor Link Sama
+      </label>
+      <label class="flex items-center text-xs">
+        <input id="nomor-link-beda" type="radio" name="nomor-link" value="beda" class="w-3.5 h-3.5 mr-1.5">
+        Nomor Link Beda
+      </label>
+    </div>
+
+    <!-- Input nomor link untuk pilihan sama -->
+    <div id="input-nomor-link-sama" class="flex items-center gap-0.5 m-0 min-h-7">
+      <input id="input-nomor-link-umum" type="text" value="100" placeholder="Nomor Link"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+    </div>
+
+    <!-- Input nomor link untuk pilihan beda -->
+    <div id="input-nomor-link-beda" class="hidden flex-col gap-0.5 m-0">
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <input id="input-nomor-link-cowok" type="text" placeholder="Nomor Link Cowok"
+          class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+      </div>
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <input id="input-nomor-link-cewek" type="text" placeholder="Nomor Link Cewek"
+          class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+      </div>
+    </div>
+
+    <!--  Pengaturan ukuran gambar untuk Section Kanan -->
+    <div class="mt-2 border-t pt-2">
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <label class="text-xs font-medium">Mode Padding Section Kanan:</label>
+        <select id="select-padding-mode" class="text-xs border border-gray-300 rounded px-2 py-1">
+          <option value="same">Atur Gambar Sekaligus</option>
+          <option value="different">Atur Gambar Berbeda</option>
+        </select>
+      </div>
+
+      <!-- Container untuk mode atur sekaligus -->
+      <div id="padding-same-controls" class="flex-col gap-1 m-0 mt-1">
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Kedua Gambar:</label>
+          <input type="range" min="160" max="400" value="16" id="padding-both-input" class="flex-1">
+          <span id="padding-both-value" class="text-xs w-8 text-right">16px</span>
+        </div>
+      </div>
+
+      <!-- Container untuk mode atur berbeda -->
+      <div id="padding-different-controls" class="hidden flex-col gap-1 m-0 mt-1">
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Atas:</label>
+          <input type="range" min="160" max="400" value="16" id="padding-top-right-input" class="flex-1">
+          <span id="padding-top-right-value" class="text-xs w-8 text-right">16px</span>
+        </div>
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Bawah:</label>
+          <input type="range" min="160" max="400" value="16" id="padding-bottom-right-input" class="flex-1">
+          <span id="padding-bottom-right-value" class="text-xs w-8 text-right">16px</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FITUR BARU: Pengaturan Posisi Gambar -->
+    <div class="mt-2 border-t pt-2">
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <label class="text-xs font-medium">Mode Posisi Gambar Kanan:</label>
+        <select id="select-position-mode" class="text-xs border border-gray-300 rounded px-2 py-1">
+          <option value="same">Atur Posisi Sekaligus</option>
+          <option value="different">Atur Posisi Berbeda</option>
+        </select>
+      </div>
+
+      <!-- Container untuk mode atur sekaligus -->
+      <div id="position-same-controls" class="flex-col gap-1 m-0 mt-1">
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Posisi X:</label>
+          <input type="range" min="-100" max="100" value="0" id="position-both-x-input" class="flex-1">
+          <span id="position-both-x-value" class="text-xs w-8 text-right">0px</span>
+        </div>
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Posisi Y:</label>
+          <input type="range" min="-100" max="100" value="0" id="position-both-y-input" class="flex-1">
+          <span id="position-both-y-value" class="text-xs w-8 text-right">0px</span>
+        </div>
+      </div>
+
+      <!-- Container untuk mode atur berbeda -->
+      <div id="position-different-controls" class="hidden flex-col gap-1 m-0 mt-1">
+        <div class="text-xs font-medium mb-1">Atas Kanan</div>
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Posisi X:</label>
+          <input type="range" min="-100" max="100" value="0" id="position-top-right-x-input" class="flex-1">
+          <span id="position-top-right-x-value" class="text-xs w-8 text-right">0px</span>
+        </div>
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Posisi Y:</label>
+          <input type="range" min="-100" max="100" value="0" id="position-top-right-y-input" class="flex-1">
+          <span id="position-top-right-y-value" class="text-xs w-8 text-right">0px</span>
+        </div>
+
+        <div class="text-xs font-medium mb-1 mt-2">Bawah Kanan</div>
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Posisi X:</label>
+          <input type="range" min="-100" max="100" value="0" id="position-bottom-right-x-input" class="flex-1">
+          <span id="position-bottom-right-x-value" class="text-xs w-8 text-right">0px</span>
+        </div>
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Posisi Y:</label>
+          <input type="range" min="-100" max="100" value="0" id="position-bottom-right-y-input" class="flex-1">
+          <span id="position-bottom-right-y-value" class="text-xs w-8 text-right">0px</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pengaturan Border -->
+    <div class="mt-2 border-t pt-2">
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <label class="text-xs font-medium">Mode Border:</label>
+        <select id="select-border-mode" class="text-xs border border-gray-300 rounded px-2 py-1">
+          <option value="all">Semua Elemen</option>
+          <option value="pair" selected>2 Elemen</option>
+        </select>
+      </div>
+
+      <div id="border-controls">
+        <!-- Mode semua elemen (4 input range dan 4 input color) -->
+        <div id="border-all-controls" class="hidden flex-col gap-1 m-0 mt-1">
+          <div class="flex items-center gap-0.5 m-0 min-h-7">
+            <label class="text-xs w-20">Atas Kiri:</label>
+            <input type="range" min="0" max="15" value="0" class="border-input flex-1" data-target="top-left">
+            <input type="color" value="#000000" class="border-color w-6 h-6 border border-gray-300 rounded"
+              data-target="top-left">
+            <span class="border-value text-xs w-8 text-right">0px</span>
+          </div>
+          <div class="flex items-center gap-0.5 m-0 min-h-7">
+            <label class="text-xs w-20">Atas Kanan:</label>
+            <input type="range" min="0" max="15" value="0" class="border-input flex-1" data-target="top-right">
+            <input type="color" value="#000000" class="border-color w-6 h-6 border border-gray-300 rounded"
+              data-target="top-right">
+            <span class="border-value text-xs w-8 text-right">0px</span>
+          </div>
+          <div class="flex items-center gap-0.5 m-0 min-h-7">
+            <label class="text-xs w-20">Bawah Kiri:</label>
+            <input type="range" min="0" max="15" value="0" class="border-input flex-1" data-target="bottom-left">
+            <input type="color" value="#000000" class="border-color w-6 h-6 border border-gray-300 rounded"
+              data-target="bottom-left">
+            <span class="border-value text-xs w-8 text-right">0px</span>
+          </div>
+          <div class="flex items-center gap-0.5 m-0 min-h-7">
+            <label class="text-xs w-20">Bawah Kanan:</label>
+            <input type="range" min="0" max="15" value="0" class="border-input flex-1" data-target="bottom-right">
+            <input type="color" value="#000000" class="border-color w-6 h-6 border border-gray-300 rounded"
+              data-target="bottom-right">
+            <span class="border-value text-xs w-8 text-right">0px</span>
+          </div>
+        </div>
+
+        <!-- Mode 2 elemen (2 input range dan 2 input color) -->
+        <div id="border-pair-controls" class="flex-col gap-1 m-0 mt-1">
+          <div class="flex items-center gap-0.5 m-0 min-h-7">
+            <label class="text-xs w-20">Kiri:</label>
+            <input type="range" min="0" max="15" value="0" class="border-input flex-1" data-target="left">
+            <input type="color" value="#000000" class="border-color w-6 h-6 border border-gray-300 rounded"
+              data-target="left">
+            <span class="border-value text-xs w-8 text-right">0px</span>
+          </div>
+          <div class="flex items-center gap-0.5 m-0 min-h-7">
+            <label class="text-xs w-20">Kanan:</label>
+            <input type="range" min="0" max="15" value="0" class="border-input flex-1" data-target="right">
+            <input type="color" value="#000000" class="border-color w-6 h-6 border border-gray-300 rounded"
+              data-target="right">
+            <span class="border-value text-xs w-8 text-right">0px</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FITUR BARU: Pengaturan Border Radius -->
+    <div class="mt-2 border-t pt-2">
+      <div class="flex items-center gap-0.5 m-0 min-h-7">
+        <label class="text-xs font-medium">Mode Border Radius:</label>
+        <select id="select-radius-mode" class="text-xs border border-gray-300 rounded px-2 py-1">
+          <option value="same">Atur Sudut Sekaligus</option>
+          <option value="different">Atur Sudut Beda</option>
+        </select>
+      </div>
+
+      <!-- Container untuk mode atur sekaligus -->
+      <div id="radius-same-controls" class="flex-col gap-1 m-0 mt-1">
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Semua Sudut:</label>
+          <input type="range" min="0" max="40" value="12" id="radius-both-input" class="flex-1">
+          <span id="radius-both-value" class="text-xs w-8 text-right">12px</span>
+        </div>
+      </div>
+
+      <!-- Container untuk mode atur berbeda -->
+      <div id="radius-different-controls" class="hidden flex-col gap-1 m-0 mt-1">
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Kiri:</label>
+          <input type="range" min="0" max="40" value="12" id="radius-left-input" class="flex-1">
+          <span id="radius-left-value" class="text-xs w-8 text-right">12px</span>
+        </div>
+        <div class="flex items-center gap-0.5 m-0 min-h-7">
+          <label class="text-xs w-20">Kanan:</label>
+          <input type="range" min="0" max="40" value="12" id="radius-right-input" class="flex-1">
+          <span id="radius-right-value" class="text-xs w-8 text-right">12px</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="md-col-span-2 flex justify-center mt-2">
+      <button type="button" id="download-btn"
+        class="h-7 px-3 text-xs rounded border-none bg-blue-500 text-white cursor-pointer transition-colors hover:bg-blue-600">Unduh
+        sebagai Gambar</button>
+    </div>
+  </form>
+
+  <script>
+    // ============================================================
+    // FUNGSI: Inisialisasi dan Event Listeners
+    // ============================================================
+
+    // Fungsi bantu untuk mendapatkan elemen dengan aman
+    const safe = id => document.getElementById(id);
+    const $ = ell => document.querySelector(ell);
+    const $$ = ell => document.querySelectorAll(ell);
+
+    // Fungsi untuk menerapkan nilai awal
+    function applyInitialValues() {
+      // Harga
+      safe('harga-cowo').textContent = safe('input-harga-cowok').value || '';
+      safe('harga-cewe').textContent = safe('input-harga-cewek').value || '';
+
+      // Nomor link - default sama
+      const nomorUmum = safe('input-nomor-link-umum').value || '';
+      safe('bio-cowo').textContent = nomorUmum;
+      safe('bio-cewe').textContent = nomorUmum;
+    }
+
+    // Panggil fungsi untuk menerapkan nilai awal
+    applyInitialValues();
+
+    // Event listener untuk input harga
+    safe('input-harga-cowok').addEventListener('input', function () {
+      safe('harga-cowo').textContent = this.value;
+    });
+
+    safe('input-harga-cewek').addEventListener('input', function () {
+      safe('harga-cewe').textContent = this.value;
+    });
+
+    // Event listener untuk input nomor link
+    safe('input-nomor-link-umum').addEventListener('input', function () {
+      if (safe('nomor-link-sama').checked) {
+        safe('bio-cowo').textContent = this.value;
+        safe('bio-cewe').textContent = this.value;
+      }
+    });
+
+    safe('input-nomor-link-cowok').addEventListener('input', function () {
+      if (safe('nomor-link-beda').checked) {
+        safe('bio-cowo').textContent = this.value;
+      }
+    });
+
+    safe('input-nomor-link-cewek').addEventListener('input', function () {
+      if (safe('nomor-link-beda').checked) {
+        safe('bio-cewe').textContent = this.value;
+      }
+    });
+
+    // Event listener untuk radio button nomor link
+    safe('nomor-link-sama').addEventListener('change', function () {
+      if (this.checked) {
+        safe('input-nomor-link-sama').classList.remove('hidden');
+        safe('input-nomor-link-beda').classList.add('hidden');
+
+        // Update nomor link dengan nilai umum
+        const nomorUmum = safe('input-nomor-link-umum').value || '';
+        safe('bio-cowo').textContent = nomorUmum;
+        safe('bio-cewe').textContent = nomorUmum;
+      }
+    });
+
+    safe('nomor-link-beda').addEventListener('change', function () {
+      if (this.checked) {
+        safe('input-nomor-link-sama').classList.add('hidden');
+        safe('input-nomor-link-beda').classList.remove('hidden');
+
+        // Update nomor link dengan nilai terpisah
+        const nomorCowok = safe('input-nomor-link-cowok').value || '';
+        const nomorCewek = safe('input-nomor-link-cewek').value || '';
+        safe('bio-cowo').textContent = nomorCowok;
+        safe('bio-cewe').textContent = nomorCewek;
+      }
+    });
+
+    // Fungsi untuk menangani input file
+    function handleFileInput(fileInputId, targetImgId) {
+      const input = safe(fileInputId);
+      if (!input) return;
+
+      input.addEventListener('change', function (ev) {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = safe(targetImgId);
+          if (img) {
+            img.src = e.target.result;
+          }
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    // Setup file input untuk gambar cowok dan cewek
+    handleFileInput('input-gambar-cowok', 'atasan-cowok');
+    handleFileInput('input-gambar-cewek', 'atasan-cewe');
+
+    // ============================================================
+    // PENGATURAN PADDING DAN BORDER
+    // ============================================================
+
+    // Mapping target untuk border
+    const borderTargets = {
+      'top-left': [safe('desk-cowo')],
+      'top-right': [safe('top-right')],
+      'bottom-left': [safe('desk-cewe')],
+      'bottom-right': [safe('bottom-right')],
+      'left': [safe('desk-cowo'), safe('desk-cewe')],
+      'right': [safe('top-right'), safe('bottom-right')]
+    };
+
+    // Fungsi untuk menerapkan padding pada gambar section kanan
+    function applyRightPadding(section, value) {
+      const gambar = $(`#${section} .img-box`);
+      if (gambar) {
+        gambar.style.width = `${value}px`;
+      }
+    }
+
+    // Fungsi untuk menerapkan padding ke kedua gambar
+    function applyBothPadding(value) {
+      applyRightPadding('top-right', value);
+      applyRightPadding('bottom-right', value);
+    }
+
+    // Event listener untuk mode padding
+    safe('select-padding-mode').addEventListener('change', function () {
+      const mode = this.value;
+      if (mode === 'same') {
+        safe('padding-same-controls').classList.remove('hidden');
+        safe('padding-different-controls').classList.add('hidden');
+      } else {
+        safe('padding-same-controls').classList.add('hidden');
+        safe('padding-different-controls').classList.remove('hidden');
+      }
+    });
+
+    // Event listener untuk input padding kedua gambar
+    safe('padding-both-input').addEventListener('input', function (e) {
+      const value = e.target.value;
+      safe('padding-both-value').textContent = value + 'px';
+      applyBothPadding(value);
+    });
+
+    // Event listener untuk input padding individual
+    ['top-right', 'bottom-right'].forEach(section => {
+      const input = safe(`padding-${section}-input`);
+      const valueSpan = safe(`padding-${section}-value`);
+
+      if (input && valueSpan) {
+        input.addEventListener('input', function (e) {
+          const value = e.target.value;
+          valueSpan.textContent = value + 'px';
+          applyRightPadding(section, value);
+        });
+      }
+    });
+
+    // Inisialisasi mode padding
+    safe('select-padding-mode').dispatchEvent(new Event('change'));
+    
+    // Fungsi untuk menerapkan border
+    function applyBorder(target, width, color) {
+      const elements = borderTargets[target];
+      if (elements) {
+        elements.forEach(el => {
+          if (el) el.style.border = width + 'px solid ' + color;
+        });
+      }
+    }
+
+    // Event listener untuk input border
+    safe('border-controls').addEventListener('input', function (e) {
+      if (e.target.classList.contains('border-input') || e.target.classList.contains('border-color')) {
+        const target = e.target.dataset.target;
+        // Cari input range dan color yang sama target
+        const parent = e.target.parentNode;
+        const range = parent.querySelector('.border-input');
+        const color = parent.querySelector('.border-color');
+        const width = range.value;
+        const colorValue = color.value;
+        // Update span
+        const span = parent.querySelector('.border-value');
+        if (span) span.textContent = width + 'px';
+        applyBorder(target, width, colorValue);
+      }
+    });
+
+    // Event listener untuk mode border
+    safe('select-border-mode').addEventListener('change', function () {
+      const mode = this.value;
+      if (mode === 'all') {
+        safe('border-all-controls').classList.remove('hidden');
+        safe('border-pair-controls').classList.add('hidden');
+      } else {
+        safe('border-all-controls').classList.add('hidden');
+        safe('border-pair-controls').classList.remove('hidden');
+      }
+    });
+
+    // Inisialisasi mode border
+    safe('select-border-mode').dispatchEvent(new Event('change'));
+
+    // ============================================================
+    // FITUR BARU: PENGATURAN BORDER RADIUS
+    // ============================================================
+
+    // Mapping target untuk border radius
+    const radiusTargets = {
+      'left': [safe('desk-cowo'), safe('desk-cewe')],
+      'right': [safe('top-right'), safe('bottom-right')],
+      'all': [safe('desk-cowo'), safe('desk-cewe'), safe('top-right'), safe('bottom-right')]
+    };
+
+    // Fungsi untuk menerapkan border radius
+    function applyRadius(target, value) {
+      const elements = radiusTargets[target];
+      if (elements) {
+        elements.forEach(el => {
+          if (el) el.style.borderRadius = value + 'px';
+        });
+      }
+    }
+
+    // Event listener untuk mode border radius
+    safe('select-radius-mode').addEventListener('change', function () {
+      const mode = this.value;
+      if (mode === 'same') {
+        safe('radius-same-controls').classList.remove('hidden');
+        safe('radius-different-controls').classList.add('hidden');
+      } else {
+        safe('radius-same-controls').classList.add('hidden');
+        safe('radius-different-controls').classList.remove('hidden');
+      }
+    });
+
+    // Event listener untuk input radius kedua sisi
+    safe('radius-both-input').addEventListener('input', function (e) {
+      const value = e.target.value;
+      safe('radius-both-value').textContent = value + 'px';
+      applyRadius('all', value);
+    });
+
+    // Event listener untuk input radius individual
+    ['left', 'right'].forEach(side => {
+      const input = safe(`radius-${side}-input`);
+      const valueSpan = safe(`radius-${side}-value`);
+
+      if (input && valueSpan) {
+        input.addEventListener('input', function (e) {
+          const value = e.target.value;
+          valueSpan.textContent = value + 'px';
+          applyRadius(side, value);
+        });
+      }
+    });
+
+    // Inisialisasi mode border radius
+    safe('select-radius-mode').dispatchEvent(new Event('change'));
+
+    // ============================================================
+    // FITUR BARU: PENGATURAN POSISI GAMBAR
+    // ============================================================
+
+    // State untuk menyimpan posisi gambar
+    const positionState = {
+      'top-right': { x: 0, y: 0 },
+      'bottom-right': { x: 0, y: 0 },
+      'both': { x: 0, y: 0 }
+    };
+
+    // Fungsi untuk menerapkan posisi gambar
+    function applyPosition(section, x, y) {
+      if (section === 'both') {
+        // Terapkan ke kedua gambar
+        applyPositionToSection('top-right', x, y);
+        applyPositionToSection('bottom-right', x, y);
+        positionState.both.x = x;
+        positionState.both.y = y;
+      } else {
+        applyPositionToSection(section, x, y);
+        positionState[section] = { x, y };
+      }
+    }
+
+    // Fungsi untuk menerapkan posisi ke section tertentu
+    function applyPositionToSection(sectionId, x, y) {
+      const gambar = $(`#${sectionId} .img-box`);
+      if (gambar) {
+        // Pastikan elemen memiliki posisi relative untuk transform bekerja
+        gambar.style.position = 'relative';
+        gambar.style.left = `${x}px`;
+        gambar.style.top = `${y}px`;
+      }
+    }
+
+    // Fungsi untuk update nilai display
+    function updatePositionValue(section, axis, value) {
+      const valueSpan = safe(`position-${section}-${axis}-value`);
+      if (valueSpan) {
+        valueSpan.textContent = value + 'px';
+      }
+    }
+
+    // Event listener untuk mode posisi
+    safe('select-position-mode').addEventListener('change', function () {
+      const mode = this.value;
+      if (mode === 'same') {
+        safe('position-same-controls').classList.remove('hidden');
+        safe('position-different-controls').classList.add('hidden');
+        
+        // Set nilai input ke state both
+        const bothXInput = safe('position-both-x-input');
+        const bothYInput = safe('position-both-y-input');
+        if (bothXInput) bothXInput.value = positionState.both.x;
+        if (bothYInput) bothYInput.value = positionState.both.y;
+        updatePositionValue('both', 'x', positionState.both.x);
+        updatePositionValue('both', 'y', positionState.both.y);
+      } else {
+        safe('position-same-controls').classList.add('hidden');
+        safe('position-different-controls').classList.remove('hidden');
+        
+        // Set nilai input ke state individual
+        const topXInput = safe('position-top-right-x-input');
+        const topYInput = safe('position-top-right-y-input');
+        const bottomXInput = safe('position-bottom-right-x-input');
+        const bottomYInput = safe('position-bottom-right-y-input');
+        
+        if (topXInput) topXInput.value = positionState['top-right'].x;
+        if (topYInput) topYInput.value = positionState['top-right'].y;
+        if (bottomXInput) bottomXInput.value = positionState['bottom-right'].x;
+        if (bottomYInput) bottomYInput.value = positionState['bottom-right'].y;
+        
+        updatePositionValue('top-right', 'x', positionState['top-right'].x);
+        updatePositionValue('top-right', 'y', positionState['top-right'].y);
+        updatePositionValue('bottom-right', 'x', positionState['bottom-right'].x);
+        updatePositionValue('bottom-right', 'y', positionState['bottom-right'].y);
+      }
+    });
+
+    // Event listener untuk posisi both (kedua gambar)
+    const positionBothXInput = safe('position-both-x-input');
+    const positionBothYInput = safe('position-both-y-input');
+
+    if (positionBothXInput) {
+      positionBothXInput.addEventListener('input', function (e) {
+        const value = parseInt(e.target.value);
+        updatePositionValue('both', 'x', value);
+        applyPosition('both', value, positionState.both.y);
+        positionState.both.x = value;
+      });
+    }
+
+    if (positionBothYInput) {
+      positionBothYInput.addEventListener('input', function (e) {
+        const value = parseInt(e.target.value);
+        updatePositionValue('both', 'y', value);
+        applyPosition('both', positionState.both.x, value);
+        positionState.both.y = value;
+      });
+    }
+
+    // Event listener untuk posisi individual
+    // Top Right
+    const positionTopRightXInput = safe('position-top-right-x-input');
+    const positionTopRightYInput = safe('position-top-right-y-input');
+
+    if (positionTopRightXInput) {
+      positionTopRightXInput.addEventListener('input', function (e) {
+        const value = parseInt(e.target.value);
+        updatePositionValue('top-right', 'x', value);
+        applyPosition('top-right', value, positionState['top-right'].y);
+      });
+    }
+
+    if (positionTopRightYInput) {
+      positionTopRightYInput.addEventListener('input', function (e) {
+        const value = parseInt(e.target.value);
+        updatePositionValue('top-right', 'y', value);
+        applyPosition('top-right', positionState['top-right'].x, value);
+      });
+    }
+
+    // Bottom Right
+    const positionBottomRightXInput = safe('position-bottom-right-x-input');
+    const positionBottomRightYInput = safe('position-bottom-right-y-input');
+
+    if (positionBottomRightXInput) {
+      positionBottomRightXInput.addEventListener('input', function (e) {
+        const value = parseInt(e.target.value);
+        updatePositionValue('bottom-right', 'x', value);
+        applyPosition('bottom-right', value, positionState['bottom-right'].y);
+      });
+    }
+
+    if (positionBottomRightYInput) {
+      positionBottomRightYInput.addEventListener('input', function (e) {
+        const value = parseInt(e.target.value);
+        updatePositionValue('bottom-right', 'y', value);
+        applyPosition('bottom-right', positionState['bottom-right'].x, value);
+      });
+    }
+
+    // Inisialisasi mode posisi
+    safe('select-position-mode').dispatchEvent(new Event('change'));
+
+    // ============================================================
+    // FITUR UNDUH - DIPERBAIKI DENGAN PENDEKATAN DARI OUTFIT GRID 2
+    // ============================================================
+
+    // ---------- Utility: convert URL -> dataURL (for CORS safety) ----------
+    async function urlToDataURL(url) {
+      try {
+        const resp = await fetch(url, { mode: 'cors' });
+        const blob = await resp.blob();
+        return await new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = () => res(r.result);
+          r.onerror = () => rej('read error');
+          r.readAsDataURL(blob);
+        });
+      } catch (e) {
+        return null; // fetch failed (likely CORS)
+      }
+    }
+
+    // Inline images used inside clone (img.src or background-image)
+    async function inlineImages(root) {
+      const imgs = Array.from(root.querySelectorAll('img'));
+      await Promise.all(imgs.map(async img => {
+        if (!img.src) return;
+        if (img.src.startsWith('data:')) return; // already inline
+        // try convert
+        const data = await urlToDataURL(img.src);
+        if (data) {
+          img.src = data;
+          return;
+        }
+        // fallback: try set crossOrigin and reload
+        try {
+          img.crossOrigin = 'anonymous';
+          const tmp = img.src;
+          img.src = tmp + (tmp.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+        }
+        catch (e) { }
+      }));
+
+      // handle elements with inline background-image (if any) -- not used here but kept for completeness
+      const els = Array.from(root.querySelectorAll('[style*="background-image"]'));
+      await Promise.all(els.map(async el => {
+        const bg = el.style.backgroundImage || '';
+        const m = bg.match(/url\(['"]?(.*?)['"]?\)/i);
+        if (!m) return;
+        const url = m[1];
+        if (url.startsWith('data:')) return;
+        const data = await urlToDataURL(url);
+        if (data) el.style.backgroundImage = `url('${data}')`;
+      }));
+    }
+
+    // ---------- Download handler (clone + inline + html-to-image) ----------
+    safe('download-btn').addEventListener('click', async function () {
+      const btn = this;
+      const originalText = btn.textContent;
+      btn.textContent = 'Memproses...';
+      btn.disabled = true;
+
+      try {
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+        // clone the target area (grid-root)
+        const original = safe('grid-root');
+        if (!original) throw new Error('Target tidak ditemukan');
+
+        const renderContainer = safe('render-container');
+        // ensure renderContainer visible offscreen and blank
+        Object.assign(renderContainer.style, {
+          left: '-10000px',
+          top: '-10000px',
+          width: '448px',
+          height: '560px',
+          overflow: 'hidden',
+          display: 'block',
+          background: 'transparent',
+        });
+        renderContainer.innerHTML = '';
+
+        const clone = original.cloneNode(true);
+        // normalize clone size to target export pixel dimensions (CSS px)
+        clone.style.width = '448px';
+        clone.style.height = '560px';
+        clone.style.boxSizing = 'border-box';
+        clone.style.backgroundColor = 'black';
+
+        renderContainer.appendChild(clone);
+
+        // inline images inside cloned node to avoid canvas tainting
+        await inlineImages(clone);
+
+        // wait for images inside clone to finish loading
+        await Promise.all(Array.from(clone.querySelectorAll('img')).map(i => {
+          if (i.complete && i.naturalWidth !== 0) return Promise.resolve();
+          return new Promise(resolve => {
+            i.onload = () => resolve();
+            i.onerror = () => resolve();
+          });
+        }));
+
+        // Choose pixelRatio for sharpness (higher = sharper)
+        const PIXEL_RATIO = 3; // you can tweak to 2 or 4 depending on desired sharpness & file size
+
+        // Use html-to-image on the clone
+        const dataUrl = await htmlToImage.toPng(clone, {
+          quality: 1,
+          pixelRatio: PIXEL_RATIO,
+          width: 448 * PIXEL_RATIO,
+          height: 560 * PIXEL_RATIO,
+          style: {
+            transform: `scale(${PIXEL_RATIO})`,
+            transformOrigin: 'top left',
+            width: '448px',
+            height: '560px'
+          },
+          backgroundColor: '#000', // force white background to avoid viewers that display transparency as black
+          cacheBust: true,
+          filter: node => {
+            // ignore interactive controls if they exist inside clone
+            return !(node.tagName === 'BUTTON' || node.tagName === 'INPUT');
+          }
+        });
+
+        // trigger download
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'outfit-grid-hd.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+      } catch (err) {
+        console.error('Export error:', err);
+        alert('Gagal menggenerate gambar. Lihat console.');
+      }
+      finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    const jangkrik = function () {
+      
+    }
+ </script>
+</body>
+
+</html>

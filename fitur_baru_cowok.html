@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OOTD COWOK</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'Arial', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- html-to-image library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+  <!-- chroma.js (untuk mengolah warna & harmony) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+
+  <style>
+    /* Hanya menyisakan style yang tidak bisa dikonversi ke Tailwind */
+    .sfks {
+      color: #ffffff;
+    }
+
+    .product-image {
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      transform: translateZ(0);
+    }
+
+    .vertical-range {
+      writing-mode: bt-lr;
+      -webkit-appearance: slider-vertical;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 360px) {
+      #ootd-form {
+        max-width: 100%;
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-white text-[#111] font-sans">
+  <a href="index.html" class="">kembali</a> ||
+  <a href="fitur_baru_cowok.html" class="">ootd cowo</a> || 
+  <a href="design_grid.html" class="">design grid</a> || 
+  <a href="baju-baris.html">baju baris</a>
+
+
+  <div id="containernya"
+    class="w-full max-w-[390px] mx-auto bg-[#0284c7] overflow-hidden aspect-[4/5] relative transform translate-z-0 -webkit-backface-visibility-hidden backface-visibility-hidden">
+  </div>
+
+  <div class="max-w-[320px] mx-auto my-2 bg-white p-3 rounded-lg" style="box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+    <div class="md-col-span-2">
+      <div class="mt-2">
+        <input id="price-base-color" type="color" value="#737373"
+          class="w-7 h-7 border border-gray-300 rounded p-0 cursor-pointer">
+        <select id="price-harmony"
+          class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+          <option value="analogous">Analogous</option>
+          <option value="complementary">Complementary</option>
+          <option value="triadic">Triadic</option>
+          <option value="tetradic">Tetradic</option>
+        </select>
+
+        <div class="mt-1.5 hidden">
+          <label class="flex items-center"><input id="apply-all" type="checkbox" checked class="w-3.5 h-3.5 mr-1.5">
+            Terapkan ke semua harga</label>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1 mt-2">
+        <div class="flex items-center gap-1.5 mb-1">
+          <label for="range-horizontal" class="flex-none w-20 text-xs font-medium">Horizontal</label>
+
+          <input id="range-horizontal" type="range" min="-100" max="100" value="0" step="1"
+            class="flex-1 h-1 rounded bg-gray-200 outline-none -webkit-appearance-none appearance-none slider-thumb">
+          <div class="flex-none w-10 text-xs text-right text-gray-500"><span id="val-horizontal">0</span> px</div>
+        </div>
+
+        
+
+        <div class="flex items-center gap-1.5 mb-1">
+          <label for="range-vertical" class="flex-none w-20 text-xs font-medium">Vertikal</label>
+
+          <input id="range-vertical" type="range" min="-100" max="100" value="0" step="1"
+            class="flex-1 h-1 rounded bg-gray-200 outline-none -webkit-appearance-none appearance-none slider-thumb  ">
+
+          <div class="flex-none w-10 text-xs text-right text-gray-500">
+            <span id="val-vertical">0</span> px
+          </div>
+        </div>
+
+
+        <div class="flex items-center gap-1.5 mb-1">
+          <label for="range-zoom" class="flex-none w-20 text-xs font-medium">Zoom (scale)</label>
+          <input id="range-zoom" type="range" min="0.5" max="2" value="1" step="0.01"
+            class="flex-1 h-1 rounded bg-gray-200 outline-none -webkit-appearance-none appearance-none slider-thumb">
+          <div class="flex-none w-10 text-xs text-right text-gray-500"><span id="val-zoom">1.00</span> x</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form id="ootd-form"
+    class="flex flex-col gap-0.5 text-xs max-w-[320px] mx-auto my-2 font-inherit bg-white p-3 rounded-lg"
+    style="box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+    <div class="flex items-center gap-0.5 m-0 min-h-7">
+      <label for="input-artis" class="hidden">jj</label>
+      <input id="input-artis" type="file" accept="image/*" placeholder="Ganti Gambar Artis"
+        class="w-full text-xs px-2 rounded border border-dashed border-gray-300 bg-gray-50 cursor-pointer">
+    </div>
+    <div class="flex items-center gap-0.5 m-0 min-h-7">
+      <input id="input-referensi" type="text" placeholder="referensi" value="by @mira"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+    </div>
+
+    <div class="flex items-center gap-0.5 m-0 min-h-7">
+      <input id="input-nomor-link" type="text" value="Link no 1000" placeholder="nomor link"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+    </div>
+
+    <div class="flex items-center gap-0.5 m-0 min-h-7">
+      <input id="input-gambar1" type="file" accept="image/*"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 w-10 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+      <input id="input-harga1" type="text" value="Rp.100.000" placeholder="Harga 1"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+    </div>
+
+    <div class="flex items-center gap-0.5 m-0 min-h-7">
+      <input id="input-gambar2" type="file" accept="image/*"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 w-10 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+      <input id="input-harga2" type="text" value="Rp.100.000" placeholder="Harga 2"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+    </div>
+
+    <div class="flex items-center gap-0.5 m-0 min-h-7">
+      <input id="input-gambar3" type="file" accept="image/*"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 w-10 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+      <input id="input-harga3" type="text" value="Rp.100.000" placeholder="Harga 3"
+        class="flex-1 h-7 px-2 text-xs rounded border border-gray-300 bg-white outline-none transition-colors focus:border-blue-500 focus:shadow-[0_0_0_2px_rgba(59,130,246,0.1)]">
+    </div>
+
+    <div class="md-col-span-2 flex justify-center mt-2">
+      <button type="button" id="download-btn"
+        class="h-7 px-3 text-xs rounded border-none bg-blue-500 text-white cursor-pointer transition-colors hover:bg-blue-600">Unduh
+        sebagai Gambar</button>
+    </div>
+  </form>
+
+  <script>
+    //! ============================================================
+    // Bangun DOM & fungsionalitas dasar
+    // ============================================================
+    const container = document.getElementById('containernya');
+
+    container.innerHTML = /*html*/ `
+      <img src="img/aset_cowok/artis_cowok.jpg" id="artis" width="100%" alt="artis background" class="absolute inset-0 object-contain z-0 pointer-events-auto cursor-crosshair transition-transform duration-120" style="transform-origin: center center; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+
+      <div class="slide bg-white absolute top-[4px] left-[6px] w-[145px] h-[480px] box-border rounded-2xl border-2 border-[#686868] overflow-hidden z-2" id="slide-card" role="img" aria-label="ootd card" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);">
+        <div class="card-inner flex flex-col h-full p-[9px_8px] bg-transparent bg-white">
+          <div class="konten flex-1 flex flex-col justify-between">
+            <h4 id="judul-card" class="text-center font-bold italic text-base -mb-1">Ra.Collection</h4>
+            <p id="referensi-text" class="text-center text-[0.6em] m-0 mb-1 -mt-1">by @mira</p>
+
+            <div class="produk flex flex-col h-[117px]" id="produk1">
+              <div class="product-image-container py-1 w-full h-full flex items-center justify-center overflow-hidden relative">
+                <div id="gambar1" class="product-image m-4 w-full h-full bg-contain bg-no-repeat bg-center cursor-crosshair" style="background-image: url('img/aset_cowok/baju.jpg');">
+                </div>
+              </div>
+              <span id="harga1" class="harga gradient inline-flex items-center justify-center text-xs leading-4 min-h-[18px] p-1.5 box-border bg-gray-500 text-white rounded-[10px_0] vertical-align-middle flex-shrink-0 italic -webkit-font-smoothing-antialiased -moz-osx-font-smoothing-grayscale">Rp.100.000</span>
+            </div>
+
+            <div class="produk flex flex-col h-[180.5px]" id="produk2">
+              <div class="product-image-container py-1 w-full h-full flex items-center justify-center overflow-hidden relative">
+                <div id="gambar2" class="product-image w-full h-full bg-contain bg-no-repeat bg-center cursor-crosshair" style="background-image: url('img/aset_cowok/celana.png');"></div>
+              </div>
+              <span id="harga2" class="harga gradient inline-flex items-center justify-center text-xs leading-4 min-h-[18px] p-1.5 box-border bg-gray-500 text-white rounded-[10px_0] vertical-align-middle flex-shrink-0 italic -webkit-font-smoothing-antialiased -moz-osx-font-smoothing-grayscale">Rp.100.000</span>
+            </div>
+
+            <div class="produk flex flex-col h-[90.5px]" id="produk3">
+              <div class="product-image-container py-1 w-full h-full flex items-center justify-center overflow-hidden relative">
+                <div id="gambar3" class="product-image w-full h-full bg-contain bg-no-repeat bg-center cursor-crosshair" style="background-image: url('img/aset_cowok/sepatu.png');"></div>
+              </div>
+              <span id="harga3" class="harga gradient inline-flex items-center justify-center text-xs leading-4 min-h-[18px] p-1.5 box-border bg-gray-500 text-white rounded-[10px_0] vertical-align-middle flex-shrink-0 italic -webkit-font-smoothing-antialiased -moz-osx-font-smoothing-grayscale">Rp.100.000</span>
+            </div>
+
+          </div>
+
+          <p id="nomor-link" class="text-center font-bold text-[0.85em] text-gray-800 mt-1.5">Link no</p>
+        </div>
+      </div>
+    `;
+
+    const safe = id => document.getElementById(id);
+
+    // ============================================================
+    // FUNGSI: Color Picker untuk gambar
+    // ============================================================
+
+    function getColorFromImage(event, element) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const rect = element.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      if (element.style.backgroundImage) {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.src = element.style.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/i, '$1');
+
+        img.onload = function () {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          const imgRect = element.getBoundingClientRect();
+          const scaleX = img.width / imgRect.width;
+          const scaleY = img.height / imgRect.height;
+
+          const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
+          const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+
+          const colorInput = safe('price-base-color');
+          if (colorInput) {
+            colorInput.value = hex;
+            applyPriceBackground(hex, harmonySelect.value, applyAllCheckbox.checked);
+          }
+        };
+      }
+      else if (element.tagName === 'IMG') {
+        canvas.width = element.naturalWidth;
+        canvas.height = element.naturalHeight;
+        ctx.drawImage(element, 0, 0, element.naturalWidth, element.naturalHeight);
+
+        const scaleX = element.naturalWidth / rect.width;
+        const scaleY = element.naturalHeight / rect.height;
+
+        const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
+        const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+
+        const colorInput = safe('price-base-color');
+        if (colorInput) {
+          colorInput.value = hex;
+          applyPriceBackground(hex, harmonySelect.value, applyAllCheckbox.checked);
+        }
+      }
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    function setupColorPickers() {
+      const productImages = ['gambar1', 'gambar2', 'gambar3'];
+      productImages.forEach(id => {
+        const element = safe(id);
+        if (element) {
+          element.addEventListener('click', (event) => {
+            getColorFromImage(event, element);
+          });
+        }
+      });
+
+      const artis = safe('artis');
+      if (artis) {
+        artis.addEventListener('click', (event) => {
+          getColorFromImage(event, artis);
+        });
+      }
+    }
+
+    function applyInitialValues() {
+      safe('referensi-text').textContent = safe('input-referensi').value || '';
+      safe('nomor-link').textContent = safe('input-nomor-link').value || '';
+      safe('harga1').textContent = safe('input-harga1').value || '';
+      safe('harga2').textContent = safe('input-harga2').value || '';
+      safe('harga3').textContent = safe('input-harga3').value || '';
+    }
+    applyInitialValues();
+
+    safe('input-referensi').addEventListener('input', function () { safe('referensi-text').textContent = this.value; });
+    safe('input-nomor-link').addEventListener('input', function () { safe('nomor-link').textContent = this.value; });
+    safe('input-harga1').addEventListener('input', function () { safe('harga1').textContent = this.value; });
+    safe('input-harga2').addEventListener('input', function () { safe('harga2').textContent = this.value; });
+    safe('input-harga3').addEventListener('input', function () { safe('harga3').textContent = this.value; });
+
+    function handleFileInput(fileInputId, targetDivId) {
+      const input = safe(fileInputId);
+      if (!input) return;
+      input.addEventListener('change', function (ev) {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const div = safe(targetDivId);
+          if (div) {
+            div.style.backgroundImage = `url('${e.target.result}')`;
+          }
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+    handleFileInput('input-gambar1', 'gambar1');
+    handleFileInput('input-gambar2', 'gambar2');
+    handleFileInput('input-gambar3', 'gambar3');
+
+    const inputArtis = safe('input-artis');
+    if (inputArtis) {
+      inputArtis.addEventListener('change', function (ev) {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = safe('artis');
+          if (img) img.src = e.target.result;
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    // transforms
+    const rangeH = safe('range-horizontal'), rangeV = safe('range-vertical'), rangeZ = safe('range-zoom');
+    const valH = safe('val-horizontal'), valV = safe('val-vertical'), valZ = safe('val-zoom');
+    const artis = safe('artis');
+    const transformState = { x: 0, y: 0, s: 1 };
+    function updateArtisTransform() { if (!artis) return; artis.style.transform = `translate(${transformState.x}px, ${transformState.y}px) scale(${transformState.s})`; }
+    if (rangeH && valH) { rangeH.addEventListener('input', function () { transformState.x = parseInt(this.value, 10) || 0; valH.textContent = transformState.x; updateArtisTransform(); }); valH.textContent = rangeH.value; transformState.x = parseInt(rangeH.value, 10) || 0; }
+    if (rangeV && valV) { rangeV.addEventListener('input', function () { transformState.y = parseInt(this.value, 10) || 0; valV.textContent = transformState.y; updateArtisTransform(); }); valV.textContent = rangeV.value; transformState.y = parseInt(rangeV.value, 10) || 0; }
+    if (rangeZ && valZ) { rangeZ.addEventListener('input', function () { transformState.s = parseFloat(this.value) || 1; valZ.textContent = transformState.s.toFixed(2); updateArtisTransform(); }); valZ.textContent = parseFloat(rangeZ.value).toFixed(2); transformState.s = parseFloat(rangeZ.value) || 1; }
+    updateArtisTransform();
+
+    // ----------------- Price background: chroma harmony -> radial gradient -----------------
+    function shiftHue(hex, degrees) {
+      const hsl = chroma(hex).hsl();
+      let h = hsl[0];
+      if (isNaN(h)) h = 0;
+      const s = hsl[1], l = hsl[2];
+      const newH = (h + degrees + 360) % 360;
+      return chroma.hsl(newH, s, l).hex();
+    }
+
+    function generateHarmony(hex, style) {
+      const base = chroma(hex).hex();
+      switch (style) {
+        case 'complementary': return [base, shiftHue(base, 180)];
+        case 'analogous': return [shiftHue(base, -30), base, shiftHue(base, 30)];
+        case 'triadic': return [base, shiftHue(base, 120), shiftHue(base, 240)];
+        case 'tetradic': return [base, shiftHue(base, 90), shiftHue(base, 180), shiftHue(base, 270)];
+        default: return [base, shiftHue(base, 180)];
+      }
+    }
+
+    function buildRadialGradient(colors) {
+      const n = colors.length;
+      const stops = colors.map((c, i) => {
+        const pct = Math.round((i / Math.max(1, n - 1)) * 100);
+        return `${c} ${pct}%`;
+      }).join(', ');
+      return `radial-gradient(circle at 30% 30%, ${stops})`;
+    }
+
+    function isLightColor(hexColor) {
+      const r = parseInt(hexColor.substr(1, 2), 16);
+      const g = parseInt(hexColor.substr(3, 2), 16);
+      const b = parseInt(hexColor.substr(5, 2), 16);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.5;
+    }
+
+    function getContrastTextColor(hexColor) {
+      return isLightColor(hexColor) ? '#000000' : '#ffffff';
+    }
+
+    function applyPriceBackground(hex, harmonyStyle, applyAll = true) {
+      const palette = generateHarmony(hex, harmonyStyle);
+      const grad = buildRadialGradient(palette);
+      const ids = ['harga1', 'harga2', 'harga3'];
+
+      const baseColor = palette[0];
+      const textColor = getContrastTextColor(baseColor);
+
+      ids.forEach(id => {
+        const el = safe(id);
+        if (!el) return;
+        el.style.backgroundImage = grad;
+        el.style.backgroundColor = 'transparent';
+        el.style.color = textColor;
+        if (!el.classList.contains('gradient')) el.classList.add('gradient');
+      });
+    }
+
+    const colorInput = safe('price-base-color');
+    const harmonySelect = safe('price-harmony');
+    const applyAllCheckbox = safe('apply-all');
+
+    try { applyPriceBackground(colorInput.value, harmonySelect.value, applyAllCheckbox.checked); } catch (e) { console.warn(e); }
+    colorInput.addEventListener('input', () => { try { applyPriceBackground(colorInput.value, harmonySelect.value, applyAllCheckbox.checked); } catch (e) { } });
+    harmonySelect.addEventListener('change', () => { try { applyPriceBackground(colorInput.value, harmonySelect.value, applyAllCheckbox.checked); } catch (e) { } });
+
+    // ----------------- html-to-image untuk download -----------------
+    safe('download-btn').addEventListener('click', async function () {
+      const el = container;
+      if (!el) return alert('Container tidak tersedia');
+
+      // Show loading
+      const originalText = this.textContent;
+      this.textContent = 'Memproses...';
+      this.disabled = true;
+
+      try {
+        // Tunggu font dan gambar loading
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+        // Tunggu semua gambar selesai load
+        await Promise.all(
+          Array.from(document.images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })
+        );
+
+        // Gunakan html-to-image dengan kualitas tinggi
+        const dataUrl = await htmlToImage.toPng(el, {
+          quality: 1,
+          pixelRatio: 3, // Kualitas tinggi
+          width: el.offsetWidth * 3,
+          height: el.offsetHeight * 3,
+          style: {
+            transform: 'scale(3)',
+            transformOrigin: 'top left'
+          },
+          backgroundColor: '#ffffff'
+        });
+
+        // Download gambar
+        const link = document.createElement('a');
+        link.download = 'ootd-card-hd.png';
+        link.href = dataUrl;
+        link.click();
+
+      } catch (error) {
+        console.error('Error generating image:', error);
+        alert('Gagal mengunduh gambar. Coba lagi.');
+      } finally {
+        // Restore button state
+        this.textContent = originalText;
+        this.disabled = false;
+      }
+    });
+
+    // Setup color pickers setelah semua elemen siap
+    setupColorPickers();
+  </script>
+  <script src="img/cek/color-manual.js"></script>
+</body>
+
+</html>

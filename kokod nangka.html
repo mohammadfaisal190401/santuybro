@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        :root {
+            --warna-bg: lightblue;
+            --ukuran-font: 20px;
+            --padding-box: 20px;
+        }
+        
+        .box {
+            background-color: var(--warna-bg);
+            font-size: var(--ukuran-font);
+            padding: var(--padding-box);
+            margin: 20px;
+            border: 2px solid black;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Contoh Variabel CSS di JS</h1>
+    
+    <div class="box" id="kotak">
+        Kotak ini menggunakan variabel CSS
+    </div>
+    
+    <button onclick="bacaVariabel()">Baca Variabel</button>
+    <button onclick="ubahWarna()">Ubah Warna</button>
+    <button onclick="ubahUkuran()">Ubah Ukuran Font</button>
+    <button onclick="resetSemua()">Reset</button>
+    
+    <div id="info"></div>
+
+    <script>
+        // 1. BACA VARIABEL CSS
+        function bacaVariabel() {
+            const root = document.documentElement;
+            const styles = getComputedStyle(root);
+            
+            // Ambil nilai variabel
+            const warna = styles.getPropertyValue('--warna-bg').trim();
+            const ukuran = styles.getPropertyValue('--ukuran-font').trim();
+            
+            document.getElementById('info').innerHTML = 
+                `Warna: ${warna}<br>Ukuran font: ${ukuran}`;
+        }
+        
+        // 2. UBAH VARIABEL CSS
+        function ubahWarna() {
+            const root = document.documentElement;
+            
+            // Ubah nilai variabel di root
+            root.style.setProperty('--warna-bg', 'lightgreen');
+            
+            document.getElementById('info').innerHTML = 
+                "Warna diubah menjadi lightgreen";
+        }
+        
+        // 3. UBAH VARIABEL LAIN
+        function ubahUkuran() {
+            const root = document.documentElement;
+            
+            // Ubah ukuran font
+            root.style.setProperty('--ukuran-font', '30px');
+            
+            document.getElementById('info').innerHTML = 
+                "Ukuran font diubah menjadi 30px";
+        }
+        
+        // 4. RESET KE DEFAULT
+        function resetSemua() {
+            const root = document.documentElement;
+            
+            root.style.setProperty('--warna-bg', 'lightblue');
+            root.style.setProperty('--ukuran-font', '20px');
+            
+            document.getElementById('info').innerHTML = 
+                "Semua variabel direset ke default";
+        }
+        
+        // 5. CONTOH LAIN: Ubah variabel di elemen tertentu
+        function ubahPadding() {
+            const kotak = document.getElementById('kotak');
+            
+            // Ubah variabel hanya untuk elemen ini
+            kotak.style.setProperty('--padding-box', '50px');
+        }
+    </script>
+</body>
+</html>

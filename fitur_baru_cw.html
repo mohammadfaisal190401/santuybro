@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OOTD</title>
+
+  <!-- link style -->
+   <link rel="stylesheet" href="style.css">
+  
+  <!-- html-to-image library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+  <!-- chroma.js (untuk mengolah warna & harmony) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+  
+  <style>
+    .sfks {
+      color: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      white-space: normal;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: #ffffff;
+      color: #111;
+    }
+
+    a {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: oklch(55.553% 0.00006 271.152);
+    }
+
+    #containernya {
+      width: 100%;
+      max-width: 390px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #0284c7;
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      position: relative;
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      width: 135px;
+      height: 472px;
+      box-sizing: border-box;
+      border-radius: 1rem;
+      border: 2px solid #686868;
+      top: 10px;
+      left: 14px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .card-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 9px 8px;
+      background: transparent;
+      background-color: #ffffff;
+    }
+
+    .konten {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .konten h4 {
+      text-align: center;
+      font-weight: 700;
+      font-style: italic;
+      font-size: 1em;
+      margin: 0 0 4px 0;
+    }
+
+    #referensi-text {
+      margin-top: -4px;
+      font-size: .6em;
+    }
+
+    .konten p {
+      text-align: center;
+      font-size: 0.7em;
+      margin: 0 0 4px 0;
+    }
+
+    /* PRODUK NORMAL - TINGGI STANDAR */
+    .produk {
+      display: flex;
+      flex-direction: column;
+      height: 117px; /* TINGGI NORMAL */
+    }
+
+    /* PRODUK 2 SAJA YANG LEBIH TINGGI */
+    #produk2 {
+      height: 180.5px; /* HANYA PRODUK2 YANG LEBIH TINGGI 23px */
+    }
+    #produk3 {
+      height: 90.5px; /* HANYA PRODUK2 YANG LEBIH TINGGI 23px */
+    }
+
+    .produk + .produk {
+      margin-top: 5px;
+    }
+
+    .product-image-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      cursor: crosshair;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      transform: translateZ(0);
+    }
+
+    .harga {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      line-height: 16px;
+      min-height: 18px;
+      padding: 5px;
+      box-sizing: border-box;
+      background-color: gray;
+      color: #fff;
+      border-radius: 10px 0;
+      vertical-align: middle;
+      flex-shrink: 0;
+      font-style: italic;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .harga.gradient {
+      background-image: linear-gradient(45deg, #8b5cf6 0%, #3b82f6 100%);
+      background-color: transparent;
+      opacity: 1;
+    }
+
+    #nomor-link {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.85em;
+      color: #1f2937;
+      margin-top: 6px;
+    }
+
+    .slide::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(transparent, rgba(255, 255, 255, 0.02));
+      z-index: 3;
+    }
+
+    /* ===== FORM ===== */
+    #ootd-form {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 12px;
+      max-width: 320px;
+      margin: 8px auto;
+      font-family: inherit;
+      background: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    #ootd-form>div {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin: 0;
+      min-height: 28px;
+    }
+
+    #ootd-form label[for^="input-"] {
+      display: none;
+    }
+
+    #ootd-form input[type="text"],
+    #ootd-form input[type="number"],
+    #ootd-form input[type="url"],
+    #ootd-form select {
+      flex: 1;
+      height: 28px;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    #ootd-form input[type="text"]:focus,
+    #ootd-form input[type="number"]:focus,
+    #ootd-form input[type="url"]:focus,
+    #ootd-form select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+
+    #ootd-form input[type="file"] {
+      width: 100%;
+      font-size: 11px;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px dashed #d1d5db;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+
+    #ootd-form input[type="color"] {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    #ootd-form button {
+      height: 28px;
+      padding: 4px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: none;
+      background: #3b82f6;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    #ootd-form button:hover {
+      background: #2563eb;
+    }
+
+    #ootd-form input[type="range"] {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: #e5e7eb;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    #ootd-form input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+    }
+
+    #ootd-form input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: none;
+    }
+
+    #ootd-form input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+    }
+
+    .sliders {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .slider-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .slider-item label {
+      flex: 0 0 80px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .slider-item .range-value {
+      flex: 0 0 40px;
+      font-size: 11px;
+      text-align: right;
+      color: #6b7280;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 360px) {
+      #ootd-form {
+        max-width: 100%;
+        padding: 8px;
+      }
+    }
+
+    .form-section {
+      max-width: 320px;
+      margin: 8px auto;
+      background: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-section label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .file-label {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .file-label:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <a href="index.html">kembali</a>
+
+  <div id="containernya"></div>
+
+  <div class="form-section">
+    <div class="md-col-span-2">
+      <div style="margin-top:8px;">
+        <input id="price-base-color" type="color" value="#737373">
+        <select id="price-harmony">
+          <option value="analogous">Analogous</option>
+          <option value="complementary">Complementary</option>
+          <option value="triadic">Triadic</option>
+          <option value="tetradic">Tetradic</option>
+        </select>
+
+        <div style="margin-top:6px;" class="hidden">
+          <label><input id="apply-all" type="checkbox" checked> Terapkan ke semua harga</label>
+        </div>
+      </div>
+
+      <div class="sliders">
+        <div class="slider-item">
+          <label for="range-horizontal">Horizontal</label>
+          <input id="range-horizontal" type="range" min="-100" max="100" value="0" step="1">
+          <div class="range-value"><span id="val-horizontal">0</span> px</div>
+        </div>
+
+        <div class="slider-item" class="bungkus-vertikal-range" style="align-items:center;">
+          <label for="range-vertical">Vertikal</label>
+          <div class="vertical-range-wrapper">
+            <input id="range-vertical" class="vertical-range" type="range" min="-100" max="100" value="0" step="1">
+          </div>
+          <div class="range-value"><span id="val-vertical">0</span> px</div>
+        </div>
+
+        <div class="slider-item">
+          <label for="range-zoom">Zoom (scale)</label>
+          <input id="range-zoom" type="range" min="0.5" max="2" value="1" step="0.01">
+          <div class="range-value"><span id="val-zoom">1.00</span> x</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form id="ootd-form">
+    <div>
+      <label for="input-artis">jj</label>
+      <input id="input-artis" type="file" accept="image/*" placeholder="Ganti Gambar Artis">
+    </div>
+    <div>
+      <input id="input-referensi" type="text" placeholder="referensi" value="by @mira">
+    </div>
+
+    <div>
+      <input id="input-nomor-link" type="text" value="Link no 1000" placeholder="nomor link">
+    </div>
+
+    <div>
+      <input id="input-gambar1" type="file" accept="image/*">
+      <input id="input-harga1" type="text" value="Rp.100.000" placeholder="Harga 1">
+    </div>
+
+    <div>
+      <input id="input-gambar2" type="file" accept="image/*">
+      <input id="input-harga2" type="text" value="Rp.100.000" placeholder="Harga 2">
+    </div>
+
+    <div>
+      <input id="input-gambar3" type="file" accept="image/*">
+      <input id="input-harga3" type="text" value="Rp.100.000" placeholder="Harga 3">
+    </div>
+
+    <div class="md-col-span-2" style="display:flex;justify-content:center;margin-top:8px;">
+      <button type="button" id="download-btn">Unduh sebagai Gambar</button>
+    </div>
+  </form>
+
+  <script>
+    //! ============================================================
+    // Bangun DOM & fungsionalitas dasar
+    // ============================================================
+    const container = document.getElementById('containernya');
+
+    container.innerHTML = /*html*/ `
+      <img src="img/model_artis.jpg" id="artis" width="100%" alt="artis background" style=" position: absolute;
+      inset: 0;
+      object-fit: contain;
+      z-index: 0;
+      pointer-events: auto;
+      cursor: crosshair;
+      transform-origin: center center;
+      transition: transform 120ms linear;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;">
+
+      <div class="slide" id="slide-card" role="img" aria-label="ootd card">
+        <div class="card-inner">
+          <div class="konten">
+            <h4 id="judul-card">Ra.Collection</h4>
+            <p id="referensi-text">by @mira</p>
+
+            <div class="produk" id="produk1">
+              <div class="product-image-container">
+                <div id="gambar1" class="product-image" style="background-image: url('img/baju.jpg');"></div>
+              </div>
+              <span id="harga1" class="harga gradient">Rp.100.000</span>
+            </div>
+
+            <div class="produk" id="produk2">
+              <div class="product-image-container">
+                <div id="gambar2" class="product-image" style="background-image: url('img/roks.jpg');"></div>
+              </div>
+              <span id="harga2" class="harga gradient">Rp.100.000</span>
+            </div>
+
+            <div class="produk" id="produk3">
+              <div class="product-image-container">
+                <div id="gambar3" class="product-image" style="background-image: url('img/sepatu.jpg');"></div>
+              </div>
+              <span id="harga3" class="harga gradient">Rp.100.000</span>
+            </div>
+
+          </div>
+
+          <p id="nomor-link">Link no</p>
+        </div>
+      </div>
+    `;
+
+    const safe = id => document.getElementById(id);
+
+    // ============================================================
+    // FUNGSI: Color Picker untuk gambar
+    // ============================================================
+    
+    function getColorFromImage(event, element) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      const rect = element.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      if (element.style.backgroundImage) {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.src = element.style.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/i, '$1');
+        
+        img.onload = function() {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          
+          const imgRect = element.getBoundingClientRect();
+          const scaleX = img.width / imgRect.width;
+          const scaleY = img.height / imgRect.height;
+          
+          const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
+          const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+          
+          const colorInput = safe('price-base-color');
+          if (colorInput) {
+            colorInput.value = hex;
+            applyPriceBackground(hex, harmonySelect.value, applyAllCheckbox.checked);
+          }
+        };
+      } 
+      else if (element.tagName === 'IMG') {
+        canvas.width = element.naturalWidth;
+        canvas.height = element.naturalHeight;
+        ctx.drawImage(element, 0, 0, element.naturalWidth, element.naturalHeight);
+        
+        const scaleX = element.naturalWidth / rect.width;
+        const scaleY = element.naturalHeight / rect.height;
+        
+        const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1).data;
+        const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+        
+        const colorInput = safe('price-base-color');
+        if (colorInput) {
+          colorInput.value = hex;
+          applyPriceBackground(hex, harmonySelect.value, applyAllCheckbox.checked);
+        }
+      }
+    }
+    
+    function rgbToHex(r, g, b) {
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    
+    function setupColorPickers() {
+      const productImages = ['gambar1', 'gambar2', 'gambar3'];
+      productImages.forEach(id => {
+        const element = safe(id);
+        if (element) {
+          element.addEventListener('click', (event) => {
+            getColorFromImage(event, element);
+          });
+        }
+      });
+      
+      const artis = safe('artis');
+      if (artis) {
+        artis.addEventListener('click', (event) => {
+          getColorFromImage(event, artis);
+        });
+      }
+    }
+
+    function applyInitialValues() {
+      safe('referensi-text').textContent = safe('input-referensi').value || '';
+      safe('nomor-link').textContent = safe('input-nomor-link').value || '';
+      safe('harga1').textContent = safe('input-harga1').value || '';
+      safe('harga2').textContent = safe('input-harga2').value || '';
+      safe('harga3').textContent = safe('input-harga3').value || '';
+    }
+    applyInitialValues();
+
+    safe('input-referensi').addEventListener('input', function () { safe('referensi-text').textContent = this.value; });
+    safe('input-nomor-link').addEventListener('input', function () { safe('nomor-link').textContent = this.value; });
+    safe('input-harga1').addEventListener('input', function () { safe('harga1').textContent = this.value; });
+    safe('input-harga2').addEventListener('input', function () { safe('harga2').textContent = this.value; });
+    safe('input-harga3').addEventListener('input', function () { safe('harga3').textContent = this.value; });
+
+    function handleFileInput(fileInputId, targetDivId) {
+      const input = safe(fileInputId);
+      if (!input) return;
+      input.addEventListener('change', function (ev) {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const div = safe(targetDivId);
+          if (div) {
+            div.style.backgroundImage = `url('${e.target.result}')`;
+          }
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+    handleFileInput('input-gambar1', 'gambar1');
+    handleFileInput('input-gambar2', 'gambar2');
+    handleFileInput('input-gambar3', 'gambar3');
+
+    const inputArtis = safe('input-artis');
+    if (inputArtis) {
+      inputArtis.addEventListener('change', function (ev) {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = safe('artis');
+          if (img) img.src = e.target.result;
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    // transforms
+    const rangeH = safe('range-horizontal'), rangeV = safe('range-vertical'), rangeZ = safe('range-zoom');
+    const valH = safe('val-horizontal'), valV = safe('val-vertical'), valZ = safe('val-zoom');
+    const artis = safe('artis');
+    const transformState = { x: 0, y: 0, s: 1 };
+    function updateArtisTransform() { if (!artis) return; artis.style.transform = `translate(${transformState.x}px, ${transformState.y}px) scale(${transformState.s})`; }
+    if (rangeH && valH) { rangeH.addEventListener('input', function () { transformState.x = parseInt(this.value, 10) || 0; valH.textContent = transformState.x; updateArtisTransform(); }); valH.textContent = rangeH.value; transformState.x = parseInt(rangeH.value, 10) || 0; }
+    if (rangeV && valV) { rangeV.addEventListener('input', function () { transformState.y = parseInt(this.value, 10) || 0; valV.textContent = transformState.y; updateArtisTransform(); }); valV.textContent = rangeV.value; transformState.y = parseInt(rangeV.value, 10) || 0; }
+    if (rangeZ && valZ) { rangeZ.addEventListener('input', function () { transformState.s = parseFloat(this.value) || 1; valZ.textContent = transformState.s.toFixed(2); updateArtisTransform(); }); valZ.textContent = parseFloat(rangeZ.value).toFixed(2); transformState.s = parseFloat(rangeZ.value) || 1; }
+    updateArtisTransform();
+
+    // ----------------- Price background: chroma harmony -> radial gradient -----------------
+    function shiftHue(hex, degrees) {
+      const hsl = chroma(hex).hsl();
+      let h = hsl[0];
+      if (isNaN(h)) h = 0;
+      const s = hsl[1], l = hsl[2];
+      const newH = (h + degrees + 360) % 360;
+      return chroma.hsl(newH, s, l).hex();
+    }
+    
+    function generateHarmony(hex, style) {
+      const base = chroma(hex).hex();
+      switch (style) {
+        case 'complementary': return [base, shiftHue(base, 180)];
+        case 'analogous': return [shiftHue(base, -30), base, shiftHue(base, 30)];
+        case 'triadic': return [base, shiftHue(base, 120), shiftHue(base, 240)];
+        case 'tetradic': return [base, shiftHue(base, 90), shiftHue(base, 180), shiftHue(base, 270)];
+        default: return [base, shiftHue(base, 180)];
+      }
+    }
+    
+    function buildRadialGradient(colors) {
+      const n = colors.length;
+      const stops = colors.map((c, i) => {
+        const pct = Math.round((i / Math.max(1, n - 1)) * 100);
+        return `${c} ${pct}%`;
+      }).join(', ');
+      return `radial-gradient(circle at 30% 30%, ${stops})`;
+    }
+    
+    function isLightColor(hexColor) {
+      const r = parseInt(hexColor.substr(1, 2), 16);
+      const g = parseInt(hexColor.substr(3, 2), 16);
+      const b = parseInt(hexColor.substr(5, 2), 16);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.5;
+    }
+    
+    function getContrastTextColor(hexColor) {
+      return isLightColor(hexColor) ? '#000000' : '#ffffff';
+    }
+    
+    function applyPriceBackground(hex, harmonyStyle, applyAll = true) {
+      const palette = generateHarmony(hex, harmonyStyle);
+      const grad = buildRadialGradient(palette);
+      const ids = ['harga1', 'harga2', 'harga3'];
+      
+      const baseColor = palette[0];
+      const textColor = getContrastTextColor(baseColor);
+      
+      ids.forEach(id => {
+        const el = safe(id);
+        if (!el) return;
+        el.style.backgroundImage = grad;
+        el.style.backgroundColor = 'transparent';
+        el.style.color = textColor;
+        if (!el.classList.contains('gradient')) el.classList.add('gradient');
+      });
+    }
+
+    const colorInput = safe('price-base-color');
+    const harmonySelect = safe('price-harmony');
+    const applyAllCheckbox = safe('apply-all');
+
+    try { applyPriceBackground(colorInput.value, harmonySelect.value, applyAllCheckbox.checked); } catch (e) { console.warn(e); }
+    colorInput.addEventListener('input', () => { try { applyPriceBackground(colorInput.value, harmonySelect.value, applyAllCheckbox.checked); } catch (e) { } });
+    harmonySelect.addEventListener('change', () => { try { applyPriceBackground(colorInput.value, harmonySelect.value, applyAllCheckbox.checked); } catch (e) { } });
+
+    // ----------------- html-to-image untuk download -----------------
+    safe('download-btn').addEventListener('click', async function () {
+      const el = container;
+      if (!el) return alert('Container tidak tersedia');
+
+      // Show loading
+      const originalText = this.textContent;
+      this.textContent = 'Memproses...';
+      this.disabled = true;
+
+      try {
+        // Tunggu font dan gambar loading
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        
+        // Tunggu semua gambar selesai load
+        await Promise.all(
+          Array.from(document.images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })
+        );
+
+        // Gunakan html-to-image dengan kualitas tinggi
+        const dataUrl = await htmlToImage.toPng(el, {
+          quality: 1,
+          pixelRatio: 3, // Kualitas tinggi
+          width: el.offsetWidth * 3,
+          height: el.offsetHeight * 3,
+          style: {
+            transform: 'scale(3)',
+            transformOrigin: 'top left'
+          },
+          backgroundColor: '#ffffff'
+        });
+
+        // Download gambar
+        const link = document.createElement('a');
+        link.download = 'ootd-card-hd.png';
+        link.href = dataUrl;
+        link.click();
+
+      } catch (error) {
+        console.error('Error generating image:', error);
+        alert('Gagal mengunduh gambar. Coba lagi.');
+      } finally {
+        // Restore button state
+        this.textContent = originalText;
+        this.disabled = false;
+      }
+    });
+
+    // Setup color pickers setelah semua elemen siap
+    setupColorPickers();
+  </script>
+  <script src="img/cek/color-manual.js"></script>
+</body>
+</html>
+
+
+      
+        
