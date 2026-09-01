@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Render HTML ke Gambar & Unduh (gabungan)</title>
+    <!--font link watermax-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Macondo&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <!-- Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@400;600&family=Quicksand:wght@500&display=swap"
+        rel="stylesheet">
+    <!-- html-to-image library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js">
+    </script>
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        /* reset / global */
+        * {
+            outline: none;
+            box-sizing: border-box;
+            white-space: normal;
+            --jarak-grid-y: 3px;
+            --jarak-grid-x: 0px;
+        }
+
+        .text-center {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 8px;
+            padding-top: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eaeaea;
+            color: #111;
+        }
+
+        a {
+            display: inline-block;
+            margin-bottom: 8px;
+            text-decoration: none;
+        }
+
+        #wadah {
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        .wadah-capture {
+          /*  background-color: deeppink;*/
+         /*   padding: var(--jarak-grid-y) 0px;*/
+            position: relative;
+        }
+
+        .capture {
+            box-shadow: rgba(0, 0, 0, 0.4);
+            width: 100%;
+            display: grid;
+            gap: var(--jarak-grid-y) var(--jarak-grid-x);
+        }
+
+        .text-center .img-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 0;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .text-center img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: fill;
+            display: block;
+        }
+
+        .text-center .meta {
+            gap: 0px;
+        }
+
+        .text-center .meta .link {
+            margin: 0;
+        }
+
+        p,
+        .harga-wrapper {
+            margin: 0;
+            display: inline-block;
+            font-size: 12px !important;
+            text-align: center;
+            font-family: "Fira Sans Condensed", Arial, sans-serif;
+        }
+
+        .link {
+            font-size: 12px !important;
+            color: #444;
+            font-weight: bold;
+            background: white;
+        } 
+
+        .text-center .link.no-val {
+            background: transparent !important;
+        }
+
+        .harga-wrapper {
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0px 10px;
+            font-family: "Quicksand", Arial, sans-serif;
+          /*  height: 15px;
+            font-size: 15px;*/
+        }
+
+        .nominalna-harga {
+          font-size:11px;
+          line-height:11px;
+          /*background:yellowgreen;*/
+        
+        }
+      
+        .download-btn {
+            margin: 10px auto 18px;
+            display: block;
+            padding: 10px 18px;
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            background: #2563eb;
+        }
+
+        .inputs {
+            display: grid;
+            max-width: 100%;
+            margin: 10px 0 30px;
+            gap: 1px;
+        }
+        .inputs.grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .inputs.grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .inputs.grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .inputs>div {
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 6px;
+            background: #fafafa;
+            color: #000;
+            font-size: 13px;
+        }
+
+        .inputs label {
+            display: block;
+            font-size: 12px;
+            margin: 6px 0 2px;
+            color: #333;
+        }
+
+        .inputs input[type="text"],
+        .inputs input[type="file"] {
+            width: 100%;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+
+        .small {
+            font-size: 12px;
+            color: #666;
+            margin-top: 6px;
+            display: block;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+        }
+        .form-row label {
+            font-size: 12px;
+            color: #333;
+            white-space: nowrap;
+            margin-right: 3px;
+        }
+        .form-row input[type="text"] {
+            flex: 1;
+            font-size: 12px;
+            padding: 4px 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-row input {
+            flex: 1;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #e0e0e0;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+        .file-label.selected {
+            background: #28a745;
+            color: white;
+            border-color: #1e7e34;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .layout-btn {
+            padding: 8px 16px;
+            border: 2px solid #1d4ed8;
+            background-color: white;
+            color: #1d4ed8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: normal;
+            transition: all 0.3s ease;
+        }
+        .layout-btn.active {
+            background-color: #1d4ed8;
+            color: white;
+            font-weight: bold;
+        }
+
+        .color-controls {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .color-controls h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+            white-space: nowrap;
+        }
+        #hargaColor {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .color-hint {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .form-1-no-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+        .form-1-no-link {
+            grid-row: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: lightblue;
+        }
+        .form-1-no-link input[type="text"] {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        #capture {
+            display: block;
+            gap: 0px;
+        }
+
+        .meta .link {
+            transition: opacity 0.12s ease;
+        }
+
+        #capture p.link,
+        #capture .link-container,
+        #capture .link {
+            display: inline !important;
+            white-space: nowrap !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        #capture p.link span,
+        #capture .link-container span {
+            display: inline !important;
+        }
+
+        /* Edit panel */
+        .edit-panel {
+            background: #f8f9fa;
+            border: 2px solid #1d4ed8;
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 5px 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 613px;
+        }
+        .edit-panel .judul-edit-panel {
+            margin: 0 2px;
+            font-weight: bold;
+            color: #333;
+        }
+        .edit-panel .control-group {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .edit-panel .control-group {
+            font-size: .7em;
+        }
+        .edit-panel .control-item {
+            flex: 1;
+            min-width: 150px;
+        }
+        .edit-panel label {
+            display: block;
+            margin-bottom: 0px;
+            font-weight: 500;
+            color: #333;
+        }
+        .edit-panel input[type="range"] {
+            width: 100%;
+            transform: scale(.8);
+            margin: 0 -10px;
+        }
+        .edit-panel .control-item .z-index-input {
+            margin-left: -40px;
+        }
+        .edit-panel .value-display {
+            display: inline-block;
+            min-width: 50px;
+            text-align: right;
+            font-weight: bold;
+        }
+        .close-panel-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: red;
+            font-size: 28px;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0;
+            line-height: 1;
+            z-index: 10;
+        }
+        .close-panel-btn:hover {
+            color: darkred;
+        }
+        .img-wrap {
+            cursor: pointer;
+            position: relative;
+            overflow: visible;
+        }
+        .img-wrap img {
+            transition: transform 0.2s;
+            display: block;
+            max-width: none;
+            max-height: none;
+            min-width: 0;
+            min-height: 0;
+        }
+        .img-wrap img:hover {
+            opacity: 0.8;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            right: 17px;
+            transform: translateY(-50%) translateX(0%);
+            font-family: "Macondo", cursive;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 0 0 10px gray;
+            background: none;
+            font-style: italic;
+            padding: 0;
+            pointer-events: none;
+            z-index: 1000;
+            white-space: nowrap;
+            font-size: 4px;
+        }
+
+        #capture {
+            position: relative;
+        }
+        .meta {
+            position: relative;
+            z-index: 999 !important;
+        }
+
+        .suffix-control {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .download-btn {
+            margin-top: 4px;
+            margin-bottom: -14px;
+        }
+
+        /* Tombol minus/plus pada range di panel edit */
+        .range-btn {
+            background: #e0e0e0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+        .range-btn:hover {
+            background: #d0d0d0;
+        }
+        .range-btn.minus {
+            margin-right: 2px;
+        }
+        .range-btn.plus {
+            margin-left: 2px;
+        }
+        .range-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .range-wrapper input[type="range"] {
+            flex: 1;
+            margin: 0 2px;
+        }
+
+        /* Padding controls di form */
+        .padding-controls {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+        .padding-controls label {
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .padding-controls input[type="range"] {
+            width: 120px;
+            margin: 0 5px;
+        }
+        .padding-controls .value-display {
+            min-width: 30px;
+            display: inline-block;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href='/fitur_baru_cw_tailwidn.html'>outfit cw</a> ||
+    <a href='/fitur_baru_cowok.html'>outfit cowok</a>
+
+    <!-- Mode select -->
+    <header>
+        <nav style="margin-bottom:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <select id="modeSelect" class="layout-select" style="padding: 8px 12px; border: 2px solid #1d4ed8; border-radius: 6px; color: #1d4ed8; background: #fff;">
+                <option value="single" selected>1 nomor link</option>
+                <option value="many">banyak nomor link</option>
+            </select>
+
+            <!-- SELECT KONTROL MODE (hanya muncul jika 1 baris) -->
+            <select id="kontrolModeSelect" style="display:none; padding: 8px 12px; border: 2px solid #1d4ed8; border-radius: 6px; color: #1d4ed8; background: #fff;">
+                <option value="1">1 Kontrol</option>
+                <option value="2">2 Kontrol</option>
+            </select>
+        </nav>
+    </header>
+
+    <!-- tombol ganti template colom -->
+    <div style="margin-bottom:10px; display: flex; gap: 8px; align-items: center; flex-wrap:wrap;">
+        <label for="layoutSelect" style="font-size: 14px; color: #333;"></label>
+        <select id="layoutSelect" class="layout-select" style="padding: 8px 12px; border: 2px solid #1d4ed8; border-radius: 6px; color: #1d4ed8; background: #fff;">
+            <option value="muncul9">Muncul 9</option>
+            <option value="muncul8">Muncul 8</option>
+            <option value="muncul8-2kolom">Muncul 8 2kolom</option>
+            <option value="muncul6-2kolom">Muncul 6, 2kolom</option>
+            <option value="muncul6-3kolom">Muncul 6, 3kolom</option>
+            <option value="muncul4">Muncul 4</option>
+            <option value="muncul3">Muncul 3</option>
+            <option value="muncul2">Muncul 2</option>
+        </select>
+        <button id="resetBtn" class="layout-btn" style="background-color: #dc3545; border-color: #dc3545; color: white;">Reset All</button>
+    </div>
+
+    <!-- Control panel untuk warna dan aspek rasio -->
+    <div class="color-controls">
+        <h3>Bg Harga:</h3>
+        <input type="color" id="hargaColor" value="#4C0094">
+        <span class="color-hint">Klik disini</span>
+        <select name="" id="aspectRatioSelect">
+            <option value="4/5" selected>4/5</option>
+            <option value="1/1">1/1</option>
+        </select>
+    </div>
+
+    <div id="wadah"></div>
+
+    <!-- Panel edit gambar ditempatkan setelah wadah, sebelum formInputs -->
+    <div id="imageEditPanel" class="edit-panel" style="display: none;">
+        <button id="closeEditPanel" class="close-panel-btn">&times;</button>
+        <center class="judul-edit-panel">Edit Gambar <span id="selectedImageIndex">-</span></center>
+        <div class="control-group">
+            <div class="control-item">
+                <label>Perbesar/Perkecil: <span id="scaleValue" class="value-display">1.00</span></label>
+                <div class="range-wrapper">
+                    <button class="range-btn minus" data-target="scaleSlider">−</button>
+                    <input type="range" id="scaleSlider" min="0.2" max="3" step="0.01" value="1">
+                    <button class="range-btn plus" data-target="scaleSlider">+</button>
+                </div>
+            </div>
+            <div class="control-item">
+                <label>Rotasi: <span id="rotateValue" class="value-display">0°</span></label>
+                <div class="range-wrapper">
+                    <button class="range-btn minus" data-target="rotateSlider">−</button>
+                    <input type="range" id="rotateSlider" min="0" max="360" step="1" value="0">
+                    <button class="range-btn plus" data-target="rotateSlider">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-item">
+                <label>Geser Horizontal (X): <span id="translateXValue" class="value-display">0px</span></label>
+                <div class="range-wrapper">
+                    <button class="range-btn minus" data-target="translateXSlider">−</button>
+                    <input type="range" id="translateXSlider" min="-100" max="100" step="1" value="0">
+                    <button class="range-btn plus" data-target="translateXSlider">+</button>
+                </div>
+            </div>
+            <div class="control-item">
+                <label>Geser Vertikal (Y): <span id="translateYValue" class="value-display">0px</span></label>
+                <div class="range-wrapper">
+                    <button class="range-btn minus" data-target="translateYSlider">−</button>
+                    <input type="range" id="translateYSlider" min="-100" max="100" step="1" value="0">
+                    <button class="range-btn plus" data-target="translateYSlider">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-item">
+                <label>Lebar (%): <span id="widthValue" class="value-display">100%</span></label>
+                <div class="range-wrapper">
+                    <button class="range-btn minus" data-target="widthSlider">−</button>
+                    <input type="range" id="widthSlider" min="20" max="200" step="1" value="100">
+                    <button class="range-btn plus" data-target="widthSlider">+</button>
+                </div>
+            </div>
+            <div class="control-item">
+                <label>Tinggi (%): <span id="heightValue" class="value-display">100%</span></label>
+                <div class="range-wrapper">
+                    <button class="range-btn minus" data-target="heightSlider">−</button>
+                    <input type="range" id="heightSlider" min="20" max="200" step="1" value="100">
+                    <button class="range-btn plus" data-target="heightSlider">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-item bg-yellow-500">
+                <label>Urutan (Z-Index): <span id="zIndexValue" class="value-display">1</span></label>
+                <div class="range-wrapper">
+                    <button class="range-btn minus" data-target="zIndexSlider">−</button>
+                    <input class="z-index-input" type="range" id="zIndexSlider" min="1" max="20" step="1" value="1">
+                    <button class="range-btn plus" data-target="zIndexSlider">+</button>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 15px;">
+            <button id="resetImageTransform" class="layout-btn" style=";">Reset Gambar Ini</button>
+        </div>
+    </div>
+
+    <div id="formInputs" class="inputs"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // ==================== VARIABEL GLOBAL ====================
+        let selectedColor = "#4C0094";
+        let noLinkMode = 'single';
+        let imageTransforms = [];
+        let currentEditingImage = null;
+        let currentEditingWrap = null;
+        let currentEditingIndex = -1;
+
+        // Watermark - default font size 4px, posisi 75%
+        let watermarkText = localStorage.getItem('watermarkText') || '';
+        let watermarkColor = localStorage.getItem('watermarkColor') || '#ffffff';
+        let watermarkFontSize = parseInt(localStorage.getItem('watermarkFontSize') || '4');
+        let watermarkTranslateX = parseInt(localStorage.getItem('watermarkTranslateX') || '75');
+
+        // Suffix link
+        let linkSuffix = localStorage.getItem('linkSuffix') || 'Z';
+
+        // Padding variables (default: Y=5px, X=0px)
+        let paddingY = 5;
+        let paddingX = 0;
+        let paddingBoth = 0;
+        let syncPadding = false;
+
+        // Gap variables (default: Y=3px, X=0px)
+        let gapY = 3;
+        let gapX = 0;
+        let gapBoth = 0;
+        let syncGap = false;
+
+        // ==================== FUNGSI UTILITY ====================
+        function hexToRgba(hex, opacity) {
+            let r, g, b;
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                r = parseInt(hex[0] + hex[0], 16);
+                g = parseInt(hex[1] + hex[1], 16);
+                b = parseInt(hex[2] + hex[2], 16);
+            } else {
+                r = parseInt(hex.substring(0, 2), 16);
+                g = parseInt(hex.substring(2, 4), 16);
+                b = parseInt(hex.substring(4, 6), 16);
+            }
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        }
+
+        function getBrightness(hexColor) {
+            hexColor = hexColor.replace('#', '');
+            const r = parseInt(hexColor.substr(0, 2), 16);
+            const g = parseInt(hexColor.substr(2, 2), 16);
+            const b = parseInt(hexColor.substr(4, 2), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
+
+        function getTextColorBasedOnBackground(backgroundColor) {
+            const brightness = getBrightness(backgroundColor);
+            return brightness > 128 ? '#000000' : '#FFFFFF';
+        }
+
+        function getColorFromImage(img, x, y, callback) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+            const pixelData = ctx.getImageData(x, y, 1, 1).data;
+            const r = pixelData[0].toString(16).padStart(2, '0');
+            const g = pixelData[1].toString(16).padStart(2, '0');
+            const b = pixelData[2].toString(16).padStart(2, '0');
+            const hexColor = `#${r}${g}${b}`;
+            callback(hexColor);
+        }
+
+        // ==================== WATERMARK ====================
+        function refreshWatermarks() {
+            const watermarks = document.querySelectorAll('.watermark');
+            const rgba = hexToRgba(watermarkColor, 0.6);
+            const percent = watermarkTranslateX / 100;
+            const translateXPercent = (percent * 100) - 50;
+            watermarks.forEach(el => {
+                el.textContent = watermarkText;
+                el.style.color = rgba;
+                el.style.fontSize = watermarkFontSize + 'px';
+                el.style.transform = `translateY(-50%) translateX(${translateXPercent}%)`;
+            });
+        }
+
+        // ==================== SUFFIX ====================
+        function refreshLinkSuffix() {
+            const linkElements = document.querySelectorAll('#capture .link .no-val, #capture .link .no-val-atas, #capture .link .no-val-bawah');
+            linkElements.forEach(el => {
+                const parent = el.closest('.link');
+                if (parent) {
+                    const noText = el.textContent;
+                    const className = el.className;
+                    parent.innerHTML = `Link. <span class="${className}">${noText}</span>${linkSuffix}`;
+                    const newSpan = parent.querySelector('.no-val, .no-val-atas, .no-val-bawah');
+                    if (newSpan && noLinkMode === 'single') {
+                        const singleInput = document.getElementById('single-no-link-input');
+                        if (singleInput) {
+                            newSpan.textContent = singleInput.value || '1';
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==================== PADDING ====================
+        function applyPaddingToCapture() {
+            const capture = document.querySelector('#capture .capture');
+            if (!capture) return;
+            let topBottom, leftRight;
+            if (syncPadding) {
+                const bothRange = document.getElementById('paddingBothRange');
+                const val = bothRange ? parseInt(bothRange.value) : 0;
+                topBottom = val;
+                leftRight = val;
+                paddingBoth = val;
+                const bothLabel = document.getElementById('paddingBothValue');
+                if (bothLabel) bothLabel.textContent = val + 'px';
+            } else {
+                const yRange = document.getElementById('paddingYRange');
+                const xRange = document.getElementById('paddingXRange');
+                topBottom = yRange ? parseInt(yRange.value) : 5;
+                leftRight = xRange ? parseInt(xRange.value) : 0;
+                paddingY = topBottom;
+                paddingX = leftRight;
+                const yLabel = document.getElementById('paddingYValue');
+                const xLabel = document.getElementById('paddingXValue');
+                if (yLabel) yLabel.textContent = topBottom + 'px';
+                if (xLabel) xLabel.textContent = leftRight + 'px';
+            }
+            capture.style.paddingTop = topBottom + 'px';
+            capture.style.paddingBottom = topBottom + 'px';
+            capture.style.paddingLeft = leftRight + 'px';
+            capture.style.paddingRight = leftRight + 'px';
+        }
+
+        // ==================== GAP ====================
+        function applyGapToCapture() {
+            const capture = document.querySelector('#capture .capture');
+            if (!capture) return;
+            let gapRow, gapCol;
+            if (syncGap) {
+                const bothRange = document.getElementById('gapBothRange');
+                const val = bothRange ? parseInt(bothRange.value) : 0;
+                gapRow = val;
+                gapCol = val;
+                gapBoth = val;
+                const bothLabel = document.getElementById('gapBothValue');
+                if (bothLabel) bothLabel.textContent = val + 'px';
+            } else {
+                const yRange = document.getElementById('gapYRange');
+                const xRange = document.getElementById('gapXRange');
+                gapRow = yRange ? parseInt(yRange.value) : 3;
+                gapCol = xRange ? parseInt(xRange.value) : 0;
+                gapY = gapRow;
+                gapX = gapCol;
+                const yLabel = document.getElementById('gapYValue');
+                const xLabel = document.getElementById('gapXValue');
+                if (yLabel) yLabel.textContent = gapRow + 'px';
+                if (xLabel) xLabel.textContent = gapCol + 'px';
+            }
+            capture.style.rowGap = gapRow + 'px';
+            capture.style.columnGap = gapCol + 'px';
+        }
+
+        // ==================== INISIALISASI TRANSFORM ====================
+        function initImageTransforms(count) {
+            imageTransforms = [];
+            for (let i = 0; i < count; i++) {
+                imageTransforms.push({
+                    scale: 1,
+                    rotate: 0,
+                    translateX: 0,
+                    translateY: 0,
+                    width: 100,
+                    height: 100,
+                    zIndex: 1
+                });
+            }
+        }
+
+        // ==================== PANEL EDIT ====================
+        function setupEditPanelListeners() {
+            document.querySelectorAll('.range-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const targetId = this.dataset.target;
+                    const input = document.getElementById(targetId);
+                    if (!input) return;
+                    const step = parseFloat(input.step) || 1;
+                    const isMinus = this.classList.contains('minus');
+                    let newVal = parseFloat(input.value) + (isMinus ? -step : step);
+                    const min = parseFloat(input.min);
+                    const max = parseFloat(input.max);
+                    if (newVal < min) newVal = min;
+                    if (newVal > max) newVal = max;
+                    input.value = newVal;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            });
+
+            document.getElementById('scaleSlider')?.addEventListener('input', function(e) {
+                const val = parseFloat(e.target.value);
+                document.getElementById('scaleValue').textContent = val.toFixed(2);
+                updateImageTransform('scale', val);
+            });
+            document.getElementById('rotateSlider')?.addEventListener('input', function(e) {
+                const val = parseInt(e.target.value);
+                document.getElementById('rotateValue').textContent = val + '°';
+                updateImageTransform('rotate', val);
+            });
+            document.getElementById('translateXSlider')?.addEventListener('input', function(e) {
+                const val = parseInt(e.target.value);
+                document.getElementById('translateXValue').textContent = val + 'px';
+                updateImageTransform('translateX', val);
+            });
+            document.getElementById('translateYSlider')?.addEventListener('input', function(e) {
+                const val = parseInt(e.target.value);
+                document.getElementById('translateYValue').textContent = val + 'px';
+                updateImageTransform('translateY', val);
+            });
+            document.getElementById('widthSlider')?.addEventListener('input', function(e) {
+                const val = parseInt(e.target.value);
+                document.getElementById('widthValue').textContent = val + '%';
+                updateImageTransform('width', val);
+            });
+            document.getElementById('heightSlider')?.addEventListener('input', function(e) {
+                const val = parseInt(e.target.value);
+                document.getElementById('heightValue').textContent = val + '%';
+                updateImageTransform('height', val);
+            });
+            document.getElementById('zIndexSlider')?.addEventListener('input', function(e) {
+                const val = parseInt(e.target.value);
+                document.getElementById('zIndexValue').textContent = val;
+                updateImageTransform('zIndex', val);
+            });
+            document.getElementById('resetImageTransform')?.addEventListener('click', function() {
+                if (currentEditingImage && currentEditingIndex >= 0) {
+                    const defaultTransform = {
+                        scale: 1,
+                        rotate: 0,
+                        translateX: 0,
+                        translateY: 0,
+                        width: 100,
+                        height: 100,
+                        zIndex: 1
+                    };
+                    imageTransforms[currentEditingIndex] = { ...defaultTransform };
+                    document.getElementById('scaleSlider').value = 1;
+                    document.getElementById('scaleValue').textContent = '1.00';
+                    document.getElementById('rotateSlider').value = 0;
+                    document.getElementById('rotateValue').textContent = '0°';
+                    document.getElementById('translateXSlider').value = 0;
+                    document.getElementById('translateXValue').textContent = '0px';
+                    document.getElementById('translateYSlider').value = 0;
+                    document.getElementById('translateYValue').textContent = '0px';
+                    document.getElementById('widthSlider').value = 100;
+                    document.getElementById('widthValue').textContent = '100%';
+                    document.getElementById('heightSlider').value = 100;
+                    document.getElementById('heightValue').textContent = '100%';
+                    document.getElementById('zIndexSlider').value = 1;
+                    document.getElementById('zIndexValue').textContent = '1';
+                    applyTransformToImage(currentEditingImage, currentEditingWrap, defaultTransform);
+                }
+            });
+            document.getElementById('closeEditPanel')?.addEventListener('click', function() {
+                document.getElementById('imageEditPanel').style.display = 'none';
+                currentEditingImage = null;
+                currentEditingWrap = null;
+                currentEditingIndex = -1;
+            });
+        }
+
+        function updateImageTransform(prop, value) {
+            if (currentEditingImage && currentEditingIndex >= 0) {
+                imageTransforms[currentEditingIndex][prop] = value;
+                const transform = imageTransforms[currentEditingIndex];
+                applyTransformToImage(currentEditingImage, currentEditingWrap, transform);
+            }
+        }
+
+        function applyTransformToImage(img, wrap, transform) {
+            const transformStr =
+                `scale(${transform.scale}) rotate(${transform.rotate}deg) translate(${transform.translateX}px, ${transform.translateY}px)`;
+            img.style.transform = transformStr;
+            img.style.width = transform.width + '%';
+            img.style.height = transform.height + '%';
+            img.style.objectFit = 'fill';
+            if (wrap) {
+                wrap.style.zIndex = transform.zIndex;
+            }
+        }
+
+        function openEditPanel(index, imgElement, wrapElement) {
+            currentEditingImage = imgElement;
+            currentEditingWrap = wrapElement;
+            currentEditingIndex = index;
+            const panel = document.getElementById('imageEditPanel');
+            const indexSpan = document.getElementById('selectedImageIndex');
+            indexSpan.textContent = `#${index + 1}`;
+            const transform = imageTransforms[index] || {
+                scale: 1,
+                rotate: 0,
+                translateX: 0,
+                translateY: 0,
+                width: 100,
+                height: 100,
+                zIndex: 1
+            };
+            document.getElementById('scaleSlider').value = transform.scale;
+            document.getElementById('scaleValue').textContent = transform.scale.toFixed(2);
+            document.getElementById('rotateSlider').value = transform.rotate;
+            document.getElementById('rotateValue').textContent = transform.rotate + '°';
+            document.getElementById('translateXSlider').value = transform.translateX;
+            document.getElementById('translateXValue').textContent = transform.translateX + 'px';
+            document.getElementById('translateYSlider').value = transform.translateY;
+            document.getElementById('translateYValue').textContent = transform.translateY + 'px';
+            document.getElementById('widthSlider').value = transform.width;
+            document.getElementById('widthValue').textContent = transform.width + '%';
+            document.getElementById('heightSlider').value = transform.height;
+            document.getElementById('heightValue').textContent = transform.height + '%';
+            document.getElementById('zIndexSlider').value = transform.zIndex;
+            document.getElementById('zIndexValue').textContent = transform.zIndex;
+            panel.style.display = 'block';
+        }
+
+        // ==================== KONTROL WARNA ====================
+        function setupColorControls() {
+            document.getElementById('hargaColor').addEventListener('input', function(e) {
+                selectedColor = e.target.value;
+                applyColorToAllHarga();
+            });
+        }
+
+        function applyColorToAllHarga() {
+            const textColor = getTextColorBasedOnBackground(selectedColor);
+            document.querySelectorAll('.harga-wrapper').forEach(el => {
+                el.style.backgroundColor = selectedColor;
+                el.style.color = textColor;
+            });
+        }
+
+        function setupAspectRatioListener() {
+            document.getElementById('aspectRatioSelect').addEventListener('change', function(e) {
+                const captureDiv = document.querySelector('#capture .capture');
+                if (captureDiv) {
+                    captureDiv.style.aspectRatio = e.target.value;
+                }
+            });
+        }
+
+        // ==================== MODE NOMOR ====================
+        function setupModeListener() {
+            document.getElementById('modeSelect').addEventListener('change', function(e) {
+                const mode = e.target.value;
+                setNoLinkMode(mode);
+            });
+        }
+
+        function setNoLinkMode(mode) {
+            noLinkMode = mode;
+            applyNoLinkModeToCapture();
+            applyNoLinkModeToForm();
+        }
+
+        function applyNoLinkModeToCapture() {
+            const capture = document.getElementById('capture');
+            if (!capture) return;
+            if (noLinkMode === 'single') {
+                const singleInput = document.getElementById('single-no-link-input');
+                if (singleInput) {
+                    const value = singleInput.value || '1';
+                    document.querySelectorAll('.no-val, .no-val-atas, .no-val-bawah').forEach(span => {
+                        span.textContent = value;
+                    });
+                }
+            }
+        }
+
+        function applyNoLinkModeToForm() {
+            const formInputs = document.getElementById('formInputs');
+            if (!formInputs) return;
+            formInputs.querySelectorAll('.no-row, .no-row-atas, .no-row-bawah').forEach(el => {
+                if (noLinkMode === 'single') {
+                    el.classList.add('hidden');
+                } else {
+                    el.classList.remove('hidden');
+                }
+            });
+            const singleForm = formInputs.querySelector('.form-1-no-link');
+            if (singleForm) {
+                if (noLinkMode === 'single') {
+                    singleForm.style.display = 'flex';
+                } else {
+                    singleForm.style.display = 'none';
+                }
+            }
+        }
+
+        // ==================== RENDER UTAMA ====================
+        function renderLayout(count, cols, kontrolMode, satuBaris) {
+            const wadah = document.getElementById('wadah');
+            const formInputs = document.getElementById('formInputs');
+
+            if (typeof kontrolMode === 'undefined') {
+                const kontrolSelect = document.getElementById('kontrolModeSelect');
+                kontrolMode = kontrolSelect ? parseInt(kontrolSelect.value) : 1;
+            }
+            if (typeof satuBaris === 'undefined') {
+                const layout = document.getElementById('layoutSelect').value;
+                satuBaris = (layout === 'muncul3' || layout === 'muncul2');
+            }
+
+            initImageTransforms(count);
+
+            const aspectRatio = document.getElementById('aspectRatioSelect').value;
+            const rows = Math.ceil(count / cols);
+            const textColor = getTextColorBasedOnBackground(selectedColor);
+
+            let html = `<div id="capture" class="wadah-capture">
+        <div class="capture" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 1fr); aspect-ratio: ${aspectRatio};">`;
+
+            for (let i = 0; i < count; i++) {
+                const transform = imageTransforms[i];
+                const imgStyle =
+                    `transform: scale(${transform.scale}) rotate(${transform.rotate}deg) translate(${transform.translateX}px, ${transform.translateY}px); width: ${transform.width}%; height: ${transform.height}%; object-fit: fill; max-width: none; max-height: none; min-width: 0; min-height: 0;`;
+                const wrapStyle = `position: relative; z-index: ${transform.zIndex}; overflow: visible;`;
+
+                let imgSrc = 'baju.png';
+                if (count === 8 && cols === 4) imgSrc = 'celana.jpg';
+                else if (count === 4) imgSrc = 'img/aset_cw/4-2kolom1.png';
+                else if (count === 3) imgSrc = 'img/aset_cw/3-1kolom1.png';
+                else if (count === 6 && cols === 2) imgSrc = 'img/aset_cw/6-2kolom1.png';
+                else if (count === 6 && cols === 3) imgSrc = 'img/aset_cw/6-3kolom2.png';
+                else if (count === 8 && cols === 2) imgSrc = 'img/aset_cw/8-2kolom3.png';
+                else if (count === 2) imgSrc = 'img/aset_cw/2-2kolom1.png';
+
+                html += `<div class="text-center">`;
+
+                if (kontrolMode === 1) {
+                    html += `
+                        <div class="img-wrap" data-img-index="${i}" style="${wrapStyle}">
+                            <img class="editable-img" src="${imgSrc}" alt="item-${i}" data-index="${i}" style="${imgStyle}">
+                            <div class="watermark"></div>
+                        </div>
+                        <div class="meta" style="position: relative; z-index: 999; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; box-sizing: border-box !important; margin: 0 auto !important; padding: 0 !important;">
+                            <div class="link" style="display: inline-block !important; white-space: nowrap !important; margin: 0 auto !important; padding: 0 !important; text-align: center !important;">
+                                No. <span class="no-val">${i + 1}</span>${linkSuffix}
+                            </div>
+                            <span class="harga-wrapper" style="background-color: ${selectedColor} !important; color: ${textColor} !important; margin: 0px auto 0 auto !important; text-align: center !important;">
+                                Rp. <span class="harga-val nominalna-harga">50</span>rb
+                            </span>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="meta meta-atas" style="position: relative; z-index: 999; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; box-sizing: border-box !important; margin: 0 auto !important; padding: 0 !important;">
+                            <div class="link" style="display: inline-block !important; white-space: nowrap !important; margin: 0 auto !important; padding: 0 !important; text-align: center !important;">
+                                Link.<span class="no-val-atas">${i + 1}</span>${linkSuffix}
+                            </div>
+                            <span class="harga-wrapper" style="background-color: ${selectedColor} !important; color: ${textColor} !important; margin: 0px auto 0 auto !important; text-align: center !important;">
+                                Rp. <span class="harga-val-atas">50</span>rb
+                            </span>
+                        </div>
+                        <div class="img-wrap gambar-sisi-atas" data-img-index="${i}" style="${wrapStyle}">
+                            <img class="editable-img" src="${imgSrc}" alt="item-${i}" data-index="${i}" style="${imgStyle}">
+                            <div class="watermark"></div>
+                        </div>
+                        <div class="meta meta-bawah" style="position: relative; z-index: 999; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; box-sizing: border-box !important; margin: 0 auto !important; padding: 0 !important;">
+                            <div class="link" style="display: inline-block !important; white-space: nowrap !important; margin: 0 auto !important; padding: 0 !important; text-align: center !important;">
+                                Link.<span class="no-val-bawah">${i + 1}</span>${linkSuffix}
+                            </div>
+                            <span class="harga-wrapper" style="background-color: ${selectedColor} !important; color: ${textColor} !important; margin: 0px auto 0 auto !important; text-align: center !important;">
+                                Rp. <span class="harga-val-bawah">50</span>rb
+                            </span>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+            }
+
+            html += `</div></div>`;
+            html += `<button class="download-btn position-static" id="download-btn">Unduh Gambar (PNG)</button>`;
+            wadah.innerHTML = html;
+
+            refreshWatermarks();
+            applyNoLinkModeToCapture();
+            applyPaddingToCapture();
+            applyGapToCapture();
+
+            document.querySelectorAll('.img-wrap').forEach(wrap => {
+                const img = wrap.querySelector('img');
+                const index = parseInt(img.dataset.index);
+                img.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const scaleX = this.naturalWidth / rect.width;
+                    const scaleY = this.naturalHeight / rect.height;
+                    const naturalX = Math.floor(x * scaleX);
+                    const naturalY = Math.floor(y * scaleY);
+                    if (this.complete) {
+                        getColorFromImage(this, naturalX, naturalY, function(color) {
+                            selectedColor = color;
+                            applyColorToAllHarga();
+                            document.getElementById('hargaColor').value = color;
+                        });
+                    } else {
+                        this.addEventListener('load', function() {
+                            getColorFromImage(this, naturalX, naturalY, function(color) {
+                                selectedColor = color;
+                                applyColorToAllHarga();
+                                document.getElementById('hargaColor').value = color;
+                            });
+                        });
+                    }
+                    openEditPanel(index, this, wrap);
+                });
+            });
+
+            // ========== BUILD FORM INPUTS ==========
+            let formHtml = '';
+            const gridClass = cols === 4 ? 'grid-4' : cols === 2 ? 'grid-2' : 'grid-3';
+
+            for (let i = 0; i < count; i++) {
+                formHtml += `<div>`;
+                formHtml += `
+                <label id="file-label-${i}" class="file-label">
+                    Pilih File
+                    <input type="file" accept="image/*" onchange="handleFileChange(${i}, event)">
+                </label>
+            `;
+
+                if (kontrolMode === 1) {
+                    formHtml += `
+                    <div class="form-row no-row">
+                        <label>No:</label>
+                        <input type="text" placeholder="Tulis nomor..." data-index="${i}" data-posisi="tunggal" oninput="updateNo(this, event)">
+                    </div>
+                    <div class="form-row">
+                        <label>Harga:</label>
+                        <input type="text" placeholder="Tulis harga..." data-index="${i}" data-posisi="tunggal" oninput="updateHarga(this, event)">
+                    </div>
+                `;
+                } else {
+                    formHtml += `
+                    <div class="form-row no-row-atas">
+                        <label>No Atas:</label>
+                        <input type="text" placeholder="No atas..." data-index="${i}" data-posisi="atas" oninput="updateNo(this, event)">
+                    </div>
+                    <div class="form-row">
+                        <label>Harga Atas:</label>
+                        <input type="text" placeholder="Harga atas..." data-index="${i}" data-posisi="atas" oninput="updateHarga(this, event)">
+                    </div>
+                    <div class="form-row no-row-bawah">
+                        <label>No Bawah:</label>
+                        <input type="text" placeholder="No bawah..." data-index="${i}" data-posisi="bawah" oninput="updateNo(this, event)">
+                    </div>
+                    <div class="form-row">
+                        <label>Harga Bawah:</label>
+                        <input type="text" placeholder="Harga bawah..." data-index="${i}" data-posisi="bawah" oninput="updateHarga(this, event)">
+                    </div>
+                `;
+                }
+
+                formHtml += `</div>`;
+            }
+
+            formHtml += `
+            <div class="form-1-no-link" style="grid-column: ${cols === 4 ? '1 / span 4' : cols === 2 ? '1 / span 2' : '1 / span 3'};">
+                <input type="text" id="single-no-link-input" placeholder="1 nomor link">
+            </div>
+            <div class="watermark-control" style="grid-column: ${cols === 4 ? '1 / span 4' : cols === 2 ? '1 / span 2' : '1 / span 3'}; margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="watermarkInput" placeholder="Teks watermark" value="${watermarkText}" style="flex: 2; padding: 8px; border: 2px solid #1d4ed8; border-radius: 6px;">
+                <input type="color" id="watermarkColor" value="${watermarkColor}" style="width: 50px; height: 38px; border: 2px solid #1d4ed8; border-radius: 6px; padding: 2px;">
+                <div style="display: flex; align-items: center; gap: 5px; background: #f0f0f0; padding: 5px 10px; border-radius: 6px;">
+                    <label style="font-size:12px;">Font Size:</label>
+                    <input type="range" id="watermarkFontSize" min="2" max="21" step="1" value="${watermarkFontSize}" style="width:80px;">
+                    <span id="watermarkFontSizeValue" style="min-width:30px; text-align:center;">${watermarkFontSize}px</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px; background: #f0f0f0; padding: 5px 10px; border-radius: 6px;">
+                    <label style="font-size:12px;">Geser X (%):</label>
+                    <input type="range" id="watermarkTranslateX" min="0" max="100" step="1" value="${watermarkTranslateX}" style="width:80px;">
+                    <span id="watermarkTranslateXValue" style="min-width:30px; text-align:center;">${watermarkTranslateX}%</span>
+                </div>
+                <button id="saveWatermarkBtn" class="layout-btn" style="background-color: ;">Simpan Watermark</button>
+            </div>
+            <div class="suffix-control" style="grid-column: ${cols === 4 ? '1 / span 4' : cols === 2 ? '1 / span 2' : '1 / span 3'};">
+                <label style="font-weight: 500;">Imbuhan Link:</label>
+                <input type="text" id="linkSuffixInput" value="${linkSuffix}" maxlength="3" style="width: 80px; padding: 8px; border: 2px solid #1d4ed8; border-radius: 6px; text-transform: uppercase;">
+                <button id="saveSuffixBtn" class="layout-btn" style="background-color:;">Simpan Imbuhan</button>
+            </div>
+            <!-- Kontrol Padding dengan 3 slider -->
+            <div class="padding-controls" style="grid-column: ${cols === 4 ? '1 / span 4' : cols === 2 ? '1 / span 2' : '1 / span 3'};">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <label><input type="checkbox" id="syncPaddingCheckbox" ${syncPadding ? 'checked' : ''}> Satukan Padding</label>
+                    <div id="paddingYControl" style="${syncPadding ? 'display:none' : 'display:block'}">
+                        <label>Padding Atas-Bawah: <span id="paddingYValue" class="value-display">${paddingY}px</span></label>
+                        <input type="range" id="paddingYRange" min="0" max="20" step="1" value="${paddingY}">
+                    </div>
+                    <div id="paddingXControl" style="${syncPadding ? 'display:none' : 'display:block'}">
+                        <label>Padding Kiri-Kanan: <span id="paddingXValue" class="value-display">${paddingX}px</span></label>
+                        <input type="range" id="paddingXRange" min="0" max="20" step="1" value="${paddingX}">
+                    </div>
+                    <div id="paddingBothControl" style="${syncPadding ? 'display:block' : 'display:none'}">
+                        <label>Padding X & Y: <span id="paddingBothValue" class="value-display">${paddingBoth}px</span></label>
+                        <input type="range" id="paddingBothRange" min="0" max="20" step="1" value="${paddingBoth}">
+                    </div>
+                </div>
+            </div>
+            <!-- Kontrol Gap dengan 3 slider -->
+            <div class="padding-controls" style="grid-column: ${cols === 4 ? '1 / span 4' : cols === 2 ? '1 / span 2' : '1 / span 3'}; margin-top: 5px;">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <label><input type="checkbox" id="syncGapCheckbox" ${syncGap ? 'checked' : ''}> Satukan Gap</label>
+                    <div id="gapYControl" style="${syncGap ? 'display:none' : 'display:block'}">
+                        <label>Gap Baris: <span id="gapYValue" class="value-display">${gapY}px</span></label>
+                        <input type="range" id="gapYRange" min="0" max="15" step="1" value="${gapY}">
+                    </div>
+                    <div id="gapXControl" style="${syncGap ? 'display:none' : 'display:block'}">
+                        <label>Gap Kolom: <span id="gapXValue" class="value-display">${gapX}px</span></label>
+                        <input type="range" id="gapXRange" min="0" max="15" step="1" value="${gapX}">
+                    </div>
+                    <div id="gapBothControl" style="${syncGap ? 'display:block' : 'display:none'}">
+                        <label>Gap X & Y: <span id="gapBothValue" class="value-display">${gapBoth}px</span></label>
+                        <input type="range" id="gapBothRange" min="0" max="15" step="1" value="${gapBoth}">
+                    </div>
+                </div>
+            </div>
+        `;
+
+            formInputs.className = 'inputs ' + gridClass;
+            formInputs.innerHTML = formHtml;
+
+            // ========== EVENT LISTENER WATERMARK ==========
+            const watermarkInput = document.getElementById('watermarkInput');
+            if (watermarkInput) {
+                watermarkInput.addEventListener('input', function(e) {
+                    watermarkText = e.target.value;
+                    refreshWatermarks();
+                });
+            }
+            const watermarkColorInput = document.getElementById('watermarkColor');
+            if (watermarkColorInput) {
+                watermarkColorInput.addEventListener('input', function(e) {
+                    watermarkColor = e.target.value;
+                    refreshWatermarks();
+                });
+            }
+            const fontSizeRange = document.getElementById('watermarkFontSize');
+            const fontSizeSpan = document.getElementById('watermarkFontSizeValue');
+            if (fontSizeRange) {
+                fontSizeRange.addEventListener('input', function(e) {
+                    const val = parseInt(e.target.value);
+                    watermarkFontSize = val;
+                    fontSizeSpan.textContent = val + 'px';
+                    refreshWatermarks();
+                });
+            }
+            const translateXRange = document.getElementById('watermarkTranslateX');
+            const translateXSpan = document.getElementById('watermarkTranslateXValue');
+            if (translateXRange) {
+                translateXRange.addEventListener('input', function(e) {
+                    const val = parseInt(e.target.value);
+                    watermarkTranslateX = val;
+                    translateXSpan.textContent = val + '%';
+                    refreshWatermarks();
+                });
+            }
+            const saveWatermarkBtn = document.getElementById('saveWatermarkBtn');
+            if (saveWatermarkBtn) {
+                saveWatermarkBtn.addEventListener('click', function() {
+                    const newText = document.getElementById('watermarkInput').value;
+                    const newColor = document.getElementById('watermarkColor').value;
+                    const newFontSize = parseInt(document.getElementById('watermarkFontSize').value);
+                    const newTranslateX = parseInt(document.getElementById('watermarkTranslateX').value);
+                    localStorage.setItem('watermarkText', newText);
+                    localStorage.setItem('watermarkColor', newColor);
+                    localStorage.setItem('watermarkFontSize', newFontSize);
+                    localStorage.setItem('watermarkTranslateX', newTranslateX);
+                    watermarkText = newText;
+                    watermarkColor = newColor;
+                    watermarkFontSize = newFontSize;
+                    watermarkTranslateX = newTranslateX;
+                    Swal.fire('Tersimpan!', 'Semua pengaturan watermark telah disimpan.', 'success');
+                });
+            }
+
+            // ========== SUFFIX ==========
+            const suffixInput = document.getElementById('linkSuffixInput');
+            const saveSuffixBtn = document.getElementById('saveSuffixBtn');
+            if (saveSuffixBtn && suffixInput) {
+                saveSuffixBtn.addEventListener('click', function() {
+                    let newSuffix = suffixInput.value.trim();
+                    if (newSuffix === '') newSuffix = 'Z';
+                    localStorage.setItem('linkSuffix', newSuffix);
+                    linkSuffix = newSuffix;
+                    refreshLinkSuffix();
+                    Swal.fire('Berhasil!', `Imbuhan "${newSuffix}" telah disimpan.`, 'success');
+                });
+            }
+
+            // ========== SINGLE NO LINK ==========
+            const singleFormInput = document.getElementById('single-no-link-input');
+            if (singleFormInput) {
+                singleFormInput.addEventListener('input', function(e) {
+                    const v = e.target.value || '1';
+                    if (noLinkMode === 'single') {
+                        document.querySelectorAll('.no-val, .no-val-atas, .no-val-bawah').forEach(span => {
+                            span.textContent = v;
+                        });
+                    }
+                });
+            }
+
+            // ========== PADDING CONTROLS ==========
+            const paddingYRange = document.getElementById('paddingYRange');
+            const paddingXRange = document.getElementById('paddingXRange');
+            const paddingBothRange = document.getElementById('paddingBothRange');
+            const paddingYValue = document.getElementById('paddingYValue');
+            const paddingXValue = document.getElementById('paddingXValue');
+            const paddingBothValue = document.getElementById('paddingBothValue');
+            const syncPaddingCheckbox = document.getElementById('syncPaddingCheckbox');
+
+            function updatePaddingFromSliders() {
+                applyPaddingToCapture();
+            }
+
+            if (paddingYRange) {
+                paddingYRange.addEventListener('input', updatePaddingFromSliders);
+            }
+            if (paddingXRange) {
+                paddingXRange.addEventListener('input', updatePaddingFromSliders);
+            }
+            if (paddingBothRange) {
+                paddingBothRange.addEventListener('input', updatePaddingFromSliders);
+            }
+
+            if (syncPaddingCheckbox) {
+                syncPaddingCheckbox.addEventListener('change', function() {
+                    syncPadding = this.checked;
+                    const paddingYControl = document.getElementById('paddingYControl');
+                    const paddingXControl = document.getElementById('paddingXControl');
+                    const paddingBothControl = document.getElementById('paddingBothControl');
+
+                    if (syncPadding) {
+                        paddingYControl.style.display = 'none';
+                        paddingXControl.style.display = 'none';
+                        paddingBothControl.style.display = 'block';
+                        if (paddingYRange) paddingYRange.value = 0;
+                        if (paddingXRange) paddingXRange.value = 0;
+                        if (paddingYValue) paddingYValue.textContent = '0px';
+                        if (paddingXValue) paddingXValue.textContent = '0px';
+                        const currentBoth = parseInt(paddingBothRange ? paddingBothRange.value : 0);
+                        if (paddingBothValue) paddingBothValue.textContent = currentBoth + 'px';
+                    } else {
+                        paddingYControl.style.display = 'block';
+                        paddingXControl.style.display = 'block';
+                        paddingBothControl.style.display = 'none';
+                        if (paddingBothRange) paddingBothRange.value = 0;
+                        if (paddingBothValue) paddingBothValue.textContent = '0px';
+                        const currentY = parseInt(paddingYRange ? paddingYRange.value : 5);
+                        const currentX = parseInt(paddingXRange ? paddingXRange.value : 0);
+                        if (paddingYValue) paddingYValue.textContent = currentY + 'px';
+                        if (paddingXValue) paddingXValue.textContent = currentX + 'px';
+                    }
+                    applyPaddingToCapture();
+                });
+                syncPaddingCheckbox.dispatchEvent(new Event('change'));
+            }
+
+            // ========== GAP CONTROLS ==========
+            const gapYRange = document.getElementById('gapYRange');
+            const gapXRange = document.getElementById('gapXRange');
+            const gapBothRange = document.getElementById('gapBothRange');
+            const gapYValue = document.getElementById('gapYValue');
+            const gapXValue = document.getElementById('gapXValue');
+            const gapBothValue = document.getElementById('gapBothValue');
+            const syncGapCheckbox = document.getElementById('syncGapCheckbox');
+
+            function updateGapFromSliders() {
+                applyGapToCapture();
+            }
+
+            if (gapYRange) {
+                gapYRange.addEventListener('input', updateGapFromSliders);
+            }
+            if (gapXRange) {
+                gapXRange.addEventListener('input', updateGapFromSliders);
+            }
+            if (gapBothRange) {
+                gapBothRange.addEventListener('input', updateGapFromSliders);
+            }
+
+            if (syncGapCheckbox) {
+                syncGapCheckbox.addEventListener('change', function() {
+                    syncGap = this.checked;
+                    const gapYControl = document.getElementById('gapYControl');
+                    const gapXControl = document.getElementById('gapXControl');
+                    const gapBothControl = document.getElementById('gapBothControl');
+
+                    if (syncGap) {
+                        gapYControl.style.display = 'none';
+                        gapXControl.style.display = 'none';
+                        gapBothControl.style.display = 'block';
+                        if (gapYRange) gapYRange.value = 0;
+                        if (gapXRange) gapXRange.value = 0;
+                        if (gapYValue) gapYValue.textContent = '0px';
+                        if (gapXValue) gapXValue.textContent = '0px';
+                        const currentBoth = parseInt(gapBothRange ? gapBothRange.value : 0);
+                        if (gapBothValue) gapBothValue.textContent = currentBoth + 'px';
+                    } else {
+                        gapYControl.style.display = 'block';
+                        gapXControl.style.display = 'block';
+                        gapBothControl.style.display = 'none';
+                        if (gapBothRange) gapBothRange.value = 0;
+                        if (gapBothValue) gapBothValue.textContent = '0px';
+                        const currentY = parseInt(gapYRange ? gapYRange.value : 3);
+                        const currentX = parseInt(gapXRange ? gapXRange.value : 0);
+                        if (gapYValue) gapYValue.textContent = currentY + 'px';
+                        if (gapXValue) gapXValue.textContent = currentX + 'px';
+                    }
+                    applyGapToCapture();
+                });
+                syncGapCheckbox.dispatchEvent(new Event('change'));
+            }
+
+            // ========== DOWNLOAD ==========
+            const downloadBtn = document.getElementById('download-btn');
+            downloadBtn.addEventListener('click', async function() {
+                const el = document.getElementById('capture');
+                if (!el) return alert('Container tidak tersedia');
+                const originalText = this.textContent;
+                this.textContent = 'Memproses...';
+                this.disabled = true;
+                try {
+                    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+                    await Promise.all(
+                        Array.from(document.images).map(img => {
+                            if (img.complete) return Promise.resolve();
+                            return new Promise((resolve) => {
+                                img.onload = resolve;
+                                img.onerror = resolve;
+                            });
+                        })
+                    );
+                    const dataUrl = await htmlToImage.toPng(el, {
+                        quality: 1,
+                        pixelRatio: 3,
+                        width: el.offsetWidth * 3,
+                        height: el.offsetHeight * 3,
+                        style: {
+                            transform: 'scale(3)',
+                            transformOrigin: 'top left'
+                        },
+                        backgroundColor: '#ffffff'
+                    });
+                    const link = document.createElement('a');
+                    link.download = `capture_${count}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                } catch (error) {
+                    console.error('Error generating image:', error);
+                    alert('Gagal mengunduh gambar. Coba lagi.');
+                } finally {
+                    this.textContent = originalText;
+                    this.disabled = false;
+                }
+            });
+
+            // ========== RESET ==========
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', confirmReset);
+            }
+
+            applyNoLinkModeToForm();
+        }
+
+        // ==================== FUNGSI UPDATE NO & HARGA ====================
+        function updateNo(inputElement, event) {
+            const index = parseInt(inputElement.dataset.index);
+            const posisi = inputElement.dataset.posisi;
+            const value = inputElement.value;
+
+            if (noLinkMode === 'many') {
+                let selector = '.no-val';
+                if (posisi === 'atas') selector = '.no-val-atas';
+                else if (posisi === 'bawah') selector = '.no-val-bawah';
+
+                const nodes = document.querySelectorAll(`#capture ${selector}`);
+                if (nodes[index]) {
+                    nodes[index].textContent = value || (index + 1);
+                }
+            }
+        }
+
+        function updateHarga(inputElement, event) {
+            const index = parseInt(inputElement.dataset.index);
+            const posisi = inputElement.dataset.posisi;
+            const value = inputElement.value;
+
+            let selector = '.harga-val';
+            if (posisi === 'atas') selector = '.harga-val-atas';
+            else if (posisi === 'bawah') selector = '.harga-val-bawah';
+
+            const nodes = document.querySelectorAll(`#capture ${selector}`);
+            if (nodes[index]) {
+                nodes[index].textContent = value || '50';
+            }
+        }
+
+        // ==================== HANDLE FILE CHANGE ====================
+        function handleFileChange(index, event) {
+            const label = document.querySelector(`#file-label-${index}`);
+            const file = event.target.files[0];
+            if (file) {
+                label.classList.add("selected");
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgs = document.getElementById('capture').querySelectorAll('img');
+                    if (imgs[index]) {
+                        imgs[index].src = e.target.result;
+                        if (imageTransforms[index]) {
+                            const wrap = imgs[index].closest('.img-wrap');
+                            applyTransformToImage(imgs[index], wrap, imageTransforms[index]);
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            } else {
+                label.classList.remove("selected");
+            }
+        }
+
+        // ==================== RESET ====================
+        function confirmReset() {
+            Swal.fire({
+                title: 'Yakin mau reset?',
+                text: "Semua input gambar, nomor, dan harga akan dihapus!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Reset Semua!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    resetAllInputs();
+                    Swal.fire('Berhasil!', 'Semua input telah direset.', 'success');
+                }
+            });
+        }
+
+        function resetAllInputs() {
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.value = '';
+            });
+            document.querySelectorAll('.file-label').forEach(label => {
+                label.classList.remove('selected');
+            });
+
+            document.querySelectorAll('#formInputs input[type="text"]').forEach(input => {
+                input.value = '';
+                if (input.dataset.posisi) {
+                    const placeholder = input.placeholder.toLowerCase();
+                    if (placeholder.includes('no')) {
+                        updateNo(input, null);
+                    } else if (placeholder.includes('harga')) {
+                        updateHarga(input, null);
+                    }
+                }
+            });
+
+            selectedColor = '#4C0094';
+            document.getElementById('hargaColor').value = selectedColor;
+            applyColorToAllHarga();
+
+            const wraps = document.querySelectorAll('#capture .img-wrap');
+            const count = wraps.length;
+            wraps.forEach((wrap, index) => {
+                const img = wrap.querySelector('img');
+                if (count === 8) img.src = 'celana.jpg';
+                else if (count === 2) img.src = 'img/aset_cw/2-2kolom1.png';
+                else img.src = 'baju.png';
+                img.style.cssText =
+                    'transform: scale(1) rotate(0deg) translate(0px, 0px); width: 100%; height: auto; object-fit: fill; max-width: none; max-height: none; min-width: 0; min-height: 0;';
+                wrap.style.zIndex = 1;
+                wrap.style.overflow = 'visible';
+            });
+            if (count > 0) {
+                initImageTransforms(count);
+            }
+
+            const singleInput = document.getElementById('single-no-link-input');
+            if (singleInput) {
+                singleInput.value = '';
+                if (noLinkMode === 'single') {
+                    document.querySelectorAll('.no-val, .no-val-atas, .no-val-bawah').forEach(span => {
+                        span.textContent = '1';
+                    });
+                }
+            }
+
+            watermarkText = localStorage.getItem('watermarkText') || '';
+            watermarkColor = localStorage.getItem('watermarkColor') || '#ffffff';
+            watermarkFontSize = parseInt(localStorage.getItem('watermarkFontSize') || '4');
+            watermarkTranslateX = parseInt(localStorage.getItem('watermarkTranslateX') || '75');
+
+            const watermarkInput = document.getElementById('watermarkInput');
+            if (watermarkInput) watermarkInput.value = watermarkText;
+            const watermarkColorInput = document.getElementById('watermarkColor');
+            if (watermarkColorInput) watermarkColorInput.value = watermarkColor;
+            const fontSizeRange = document.getElementById('watermarkFontSize');
+            if (fontSizeRange) {
+                fontSizeRange.value = watermarkFontSize;
+                document.getElementById('watermarkFontSizeValue').textContent = watermarkFontSize + 'px';
+            }
+            const translateXRange = document.getElementById('watermarkTranslateX');
+            if (translateXRange) {
+                translateXRange.value = watermarkTranslateX;
+                document.getElementById('watermarkTranslateXValue').textContent = watermarkTranslateX + '%';
+            }
+            refreshWatermarks();
+
+            const suffixInput = document.getElementById('linkSuffixInput');
+            if (suffixInput) {
+                suffixInput.value = linkSuffix;
+            }
+            refreshLinkSuffix();
+
+            // Reset padding ke default (Y=5px, X=0px)
+            paddingY = 5;
+            paddingX = 0;
+            paddingBoth = 0;
+            syncPadding = false;
+            const syncPaddingCheckbox = document.getElementById('syncPaddingCheckbox');
+            if (syncPaddingCheckbox) {
+                syncPaddingCheckbox.checked = false;
+                syncPaddingCheckbox.dispatchEvent(new Event('change'));
+            }
+            const paddingYRange = document.getElementById('paddingYRange');
+            const paddingXRange = document.getElementById('paddingXRange');
+            const paddingBothRange = document.getElementById('paddingBothRange');
+            if (paddingYRange) paddingYRange.value = 5;
+            if (paddingXRange) paddingXRange.value = 0;
+            if (paddingBothRange) paddingBothRange.value = 0;
+            const paddingYValue = document.getElementById('paddingYValue');
+            const paddingXValue = document.getElementById('paddingXValue');
+            const paddingBothValue = document.getElementById('paddingBothValue');
+            if (paddingYValue) paddingYValue.textContent = '5px';
+            if (paddingXValue) paddingXValue.textContent = '0px';
+            if (paddingBothValue) paddingBothValue.textContent = '0px';
+
+            // Reset gap ke default (Y=3px, X=0px)
+            gapY = 3;
+            gapX = 0;
+            gapBoth = 0;
+            syncGap = false;
+            const syncGapCheckbox = document.getElementById('syncGapCheckbox');
+            if (syncGapCheckbox) {
+                syncGapCheckbox.checked = false;
+                syncGapCheckbox.dispatchEvent(new Event('change'));
+            }
+            const gapYRange = document.getElementById('gapYRange');
+            const gapXRange = document.getElementById('gapXRange');
+            const gapBothRange = document.getElementById('gapBothRange');
+            if (gapYRange) gapYRange.value = 3;
+            if (gapXRange) gapXRange.value = 0;
+            if (gapBothRange) gapBothRange.value = 0;
+            const gapYValue = document.getElementById('gapYValue');
+            const gapXValue = document.getElementById('gapXValue');
+            const gapBothValue = document.getElementById('gapBothValue');
+            if (gapYValue) gapYValue.textContent = '3px';
+            if (gapXValue) gapXValue.textContent = '0px';
+            if (gapBothValue) gapBothValue.textContent = '0px';
+
+            applyPaddingToCapture();
+            applyGapToCapture();
+        }
+
+        // ==================== LAYOUT SELECT CHANGE ====================
+        function updateLayout(value) {
+            const satuBaris = (value === 'muncul3' || value === 'muncul2');
+            const kontrolSelect = document.getElementById('kontrolModeSelect');
+
+            if (satuBaris) {
+                kontrolSelect.style.display = 'inline-block';
+                if (!kontrolSelect.value) kontrolSelect.value = '2';
+            } else {
+                kontrolSelect.style.display = 'none';
+                kontrolSelect.value = '1';
+            }
+            const kontrolMode = parseInt(kontrolSelect.value);
+
+            let count, cols;
+            switch (value) {
+                case 'muncul9': count = 9; cols = 3; break;
+                case 'muncul8': count = 8; cols = 4; break;
+                case 'muncul8-2kolom': count = 8; cols = 2; break;
+                case 'muncul6-2kolom': count = 6; cols = 2; break;
+                case 'muncul6-3kolom': count = 6; cols = 3; break;
+                case 'muncul4': count = 4; cols = 2; break;
+                case 'muncul3': count = 3; cols = 3; break;
+                case 'muncul2': count = 2; cols = 2; break;
+                default: count = 8; cols = 4;
+            }
+            renderLayout(count, cols, kontrolMode, satuBaris);
+            updateActiveButton(value);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateActiveButton(activeId) {
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const el = document.getElementById(activeId);
+            if (el) el.classList.add('active');
+        }
+
+        // ==================== INIT ====================
+        window.addEventListener('DOMContentLoaded', () => {
+            const layoutSelect = document.getElementById('layoutSelect');
+            layoutSelect.value = 'muncul8';
+            updateLayout('muncul8');
+
+            layoutSelect.addEventListener('change', function() {
+                updateLayout(this.value);
+            });
+
+            document.getElementById('kontrolModeSelect').addEventListener('change', function() {
+                const currentLayout = document.getElementById('layoutSelect').value;
+                updateLayout(currentLayout);
+            });
+
+            setupColorControls();
+            setupAspectRatioListener();
+            setupModeListener();
+            setupEditPanelListeners();
+
+            document.getElementById('modeSelect').value = 'single';
+            applyNoLinkModeToForm();
+        });
+    </script>
+   <!-- <script src="img/cek/color-manual.js"></script>-->
+</body>
+
+</html>
