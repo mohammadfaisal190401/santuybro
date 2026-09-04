@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <style>
-        /* reset / global */
         * {
             outline: none;
             box-sizing: border-box;
@@ -1078,7 +1077,7 @@
                 html += `<div class="text-center">`;
 
                 if (kontrolMode === 1) {
-                    html += `
+                    html += /* html*/`
                         <div class="img-wrap" data-img-index="${i}" style="${wrapStyle}">
                             <img class="editable-img" src="${imgSrc}" alt="item-${i}" data-index="${i}" style="${imgStyle}">
                             <div class="watermark"></div>
@@ -1093,10 +1092,10 @@
                         </div>
                     `;
                 } else {
-                    html += `
+                    html += /*html*/ `
                         <div class="meta meta-atas" style="position: relative; z-index: 999; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; box-sizing: border-box !important; margin: 0 auto !important; padding: 0 !important;">
                             <div class="link" style="display: inline-block !important; white-space: nowrap !important; margin: 0 auto !important; padding: 0 !important; text-align: center !important;">
-                                Link.<span class="no-val-atas">${i + 1}</span>${linkSuffix}
+                                No.<span class="no-val-atas">${i + 1}</span>${linkSuffix}
                             </div>
                             <span class="harga-wrapper" style="background-color: ${selectedColor} !important; color: ${textColor} !important; margin: 0px auto 0 auto !important; text-align: center !important;">
                                 Rp. <span class="harga-val-atas">50</span>rb
