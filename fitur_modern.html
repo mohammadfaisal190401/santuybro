@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Outfit Editor</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-200 text-gray-900">
+
+    <main class="min-h-screen flex flex-col lg:flex-row items-center justify-center gap-5 p-4">
+
+        <!-- ===================================================== -->
+        <!-- PREVIEW -->
+        <!-- ===================================================== -->
+        <div class="w-full max-w-[560px]">
+
+            <div
+                class="aspect-[4/5] w-full overflow-hidden flex bg-white shadow-xl rounded-xl"
+            >
+
+                <!-- ================================================= -->
+                <!-- OUTFIT : 38.2% -->
+                <!-- ================================================= -->
+                <div
+                    class="w-[45%] h-full flex flex-col items-center text-center p-3"
+                >
+
+                    <!-- Judul -->
+                    <span
+                        id="preview-title"
+                        class="text-center text-base font-semibold mb-2 shrink-0"
+                    >
+                        Inspirasi outfit set
+                    </span>
+
+
+                    <!-- Area gambar outfit -->
+                    <div class="relative w-full flex-1 overflow-hidden">
+
+                        <img
+                            id="outfit-preview"
+                            src="img/outfit_modern.png"
+                            alt=""
+                            class="absolute top-0 left-0 w-full h-auto max-w-none"
+                        />
+
+                    </div>
+
+
+                    <!-- Nomor produk -->
+                    <p class="text-center mt-2 mb-1 text-sm shrink-0">
+
+                        No.
+
+                        <span
+                            id="preview-number"
+                            class="font-semibold"
+                        >
+                            4383
+                        </span>
+
+                    </p>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- MODEL : 61.8% -->
+                <!-- ================================================= -->
+                <div class="w-[55%] h-full">
+
+                    <!--
+                        MODEL TANPA PADDING
+                        TOP  : 0
+                        RIGHT: 0
+                        LEFT : 0
+                        BOTTOM: 0
+                    -->
+                    <div
+                        class="relative w-full h-full overflow-hidden"
+                    >
+
+                        <img
+                            id="model-preview"
+                            src="img/model_modern.png"
+                            alt=""
+                            class="absolute top-0 left-0 w-full h-auto max-w-none"
+                        />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FORM EDITOR -->
+        <!-- ===================================================== -->
+        <form
+            id="editor-form"
+            class="w-full max-w-md bg-white rounded-xl shadow-lg p-4"
+            onsubmit="return false"
+        >
+
+            <h2 class="text-lg font-bold mb-4">
+                Edit Preview
+            </h2>
+
+
+            <!-- ================================================= -->
+            <!-- OUTFIT -->
+            <!-- ================================================= -->
+            <div class="mb-5">
+
+                <h3 class="font-semibold text-base mb-3">
+                    Outfit
+                </h3>
+
+
+                <!-- FILE OUTFIT -->
+                <div class="flex items-center gap-3 mb-3">
+
+                    <label
+                        for="outfit-file"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Gambar Outfit
+                    </label>
+
+                    <input
+                        id="outfit-file"
+                        type="file"
+                        accept="image/*"
+                        class="min-w-0 flex-1 text-xs
+                               file:mr-2 file:py-1.5 file:px-3
+                               file:rounded-lg file:border-0
+                               file:bg-gray-900 file:text-white
+                               hover:file:bg-gray-700"
+                    />
+
+                </div>
+
+
+                <!-- OUTFIT X -->
+                <div class="flex items-center gap-3 mb-2">
+
+                    <label
+                        for="outfit-x"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Geser Horizontal
+                    </label>
+
+                    <div class="flex flex-1 items-center gap-2 min-w-0">
+
+                        <button
+                            type="button"
+                            data-action="minus"
+                            data-target="outfit-x"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            −
+                        </button>
+
+                        <input
+                            id="outfit-x"
+                            type="range"
+                            min="-100"
+                            max="100"
+                            value="0"
+                            class="w-full accent-gray-900"
+                        />
+
+                        <button
+                            type="button"
+                            data-action="plus"
+                            data-target="outfit-x"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            +
+                        </button>
+
+                        <span
+                            id="outfit-x-value"
+                            class="w-12 shrink-0 text-right text-xs"
+                        >
+                            0 px
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OUTFIT Y -->
+                <div class="flex items-center gap-3 mb-2">
+
+                    <label
+                        for="outfit-y"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Geser Vertikal
+                    </label>
+
+                    <div class="flex flex-1 items-center gap-2 min-w-0">
+
+                        <button
+                            type="button"
+                            data-action="minus"
+                            data-target="outfit-y"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            −
+                        </button>
+
+                        <input
+                            id="outfit-y"
+                            type="range"
+                            min="-100"
+                            max="100"
+                            value="-14"
+                            class="w-full accent-gray-900"
+                        />
+
+                        <button
+                            type="button"
+                            data-action="plus"
+                            data-target="outfit-y"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            +
+                        </button>
+
+                        <span
+                            id="outfit-y-value"
+                            class="w-12 shrink-0 text-right text-xs"
+                        >
+                            -14 px
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- OUTFIT ZOOM -->
+                <div class="flex items-center gap-3">
+
+                    <label
+                        for="outfit-zoom"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Zoom
+                    </label>
+
+                    <div class="flex flex-1 items-center gap-2 min-w-0">
+
+                        <button
+                            type="button"
+                            data-action="minus"
+                            data-target="outfit-zoom"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            −
+                        </button>
+
+                        <input
+                            id="outfit-zoom"
+                            type="range"
+                            min="50"
+                            max="200"
+                            value="87"
+                            class="w-full accent-gray-900"
+                        />
+
+                        <button
+                            type="button"
+                            data-action="plus"
+                            data-target="outfit-zoom"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            +
+                        </button>
+
+                        <span
+                            id="outfit-zoom-value"
+                            class="w-12 shrink-0 text-right text-xs"
+                        >
+                            87%
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- MODEL -->
+            <!-- ================================================= -->
+            <div class="mb-5">
+
+                <h3 class="font-semibold text-base mb-3">
+                    Model
+                </h3>
+
+
+                <!-- FILE MODEL -->
+                <div class="flex items-center gap-3 mb-3">
+
+                    <label
+                        for="model-file"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Gambar Model
+                    </label>
+
+                    <input
+                        id="model-file"
+                        type="file"
+                        accept="image/*"
+                        class="min-w-0 flex-1 text-xs
+                               file:mr-2 file:py-1.5 file:px-3
+                               file:rounded-lg file:border-0
+                               file:bg-gray-900 file:text-white
+                               hover:file:bg-gray-700"
+                    />
+
+                </div>
+
+
+                <!-- MODEL X -->
+                <div class="flex items-center gap-3 mb-2">
+
+                    <label
+                        for="model-x"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Geser Horizontal
+                    </label>
+
+                    <div class="flex flex-1 items-center gap-2 min-w-0">
+
+                        <button
+                            type="button"
+                            data-action="minus"
+                            data-target="model-x"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            −
+                        </button>
+
+                        <input
+                            id="model-x"
+                            type="range"
+                            min="-100"
+                            max="100"
+                            value="0"
+                            class="w-full accent-gray-900"
+                        />
+
+                        <button
+                            type="button"
+                            data-action="plus"
+                            data-target="model-x"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            +
+                        </button>
+
+                        <span
+                            id="model-x-value"
+                            class="w-12 shrink-0 text-right text-xs"
+                        >
+                            0 px
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MODEL Y -->
+                <div class="flex items-center gap-3 mb-2">
+
+                    <label
+                        for="model-y"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Geser Vertikal
+                    </label>
+
+                    <div class="flex flex-1 items-center gap-2 min-w-0">
+
+                        <button
+                            type="button"
+                            data-action="minus"
+                            data-target="model-y"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            −
+                        </button>
+
+                        <input
+                            id="model-y"
+                            type="range"
+                            min="-100"
+                            max="100"
+                            value="0"
+                            class="w-full accent-gray-900"
+                        />
+
+                        <button
+                            type="button"
+                            data-action="plus"
+                            data-target="model-y"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            +
+                        </button>
+
+                        <span
+                            id="model-y-value"
+                            class="w-12 shrink-0 text-right text-xs"
+                        >
+                            0 px
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MODEL ZOOM -->
+                <div class="flex items-center gap-3">
+
+                    <label
+                        for="model-zoom"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Zoom
+                    </label>
+
+                    <div class="flex flex-1 items-center gap-2 min-w-0">
+
+                        <button
+                            type="button"
+                            data-action="minus"
+                            data-target="model-zoom"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            −
+                        </button>
+
+                        <input
+                            id="model-zoom"
+                            type="range"
+                            min="50"
+                            max="200"
+                            value="100"
+                            class="w-full accent-gray-900"
+                        />
+
+                        <button
+                            type="button"
+                            data-action="plus"
+                            data-target="model-zoom"
+                            class="w-7 h-7 shrink-0 rounded-md bg-gray-900
+                                   text-white text-sm font-bold
+                                   hover:bg-gray-700"
+                        >
+                            +
+                        </button>
+
+                        <span
+                            id="model-zoom-value"
+                            class="w-12 shrink-0 text-right text-xs"
+                        >
+                            100%
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- TEXT -->
+            <!-- ================================================= -->
+            <div>
+
+                <h3 class="font-semibold text-base mb-3">
+                    Text
+                </h3>
+
+
+                <!-- JUDUL -->
+                <div class="flex items-center gap-3 mb-3">
+
+                    <label
+                        for="title-input"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Judul Outfit
+                    </label>
+
+                    <input
+                        id="title-input"
+                        type="text"
+                        value="Inspirasi outfit set"
+                        class="min-w-0 flex-1 border border-gray-300
+                               rounded-lg px-3 py-1.5 text-sm
+                               focus:outline-none focus:ring-2
+                               focus:ring-gray-900"
+                    />
+
+                </div>
+
+
+                <!-- NOMOR -->
+                <div class="flex items-center gap-3">
+
+                    <label
+                        for="number-input"
+                        class="w-36 shrink-0 text-xs font-medium"
+                    >
+                        Nomor Produk
+                    </label>
+
+                    <input
+                        id="number-input"
+                        type="text"
+                        value="4383"
+                        class="min-w-0 flex-1 border border-gray-300
+                               rounded-lg px-3 py-1.5 text-sm
+                               focus:outline-none focus:ring-2
+                               focus:ring-gray-900"
+                    />
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <!-- ========================================================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================================================= -->
+    <script>
+
+        /* =========================================================
+           ELEMENT
+        ========================================================= */
+
+        const outfitPreview =
+            document.getElementById("outfit-preview");
+
+        const modelPreview =
+            document.getElementById("model-preview");
+
+        const titleInput =
+            document.getElementById("title-input");
+
+        const numberInput =
+            document.getElementById("number-input");
+
+        const previewTitle =
+            document.getElementById("preview-title");
+
+        const previewNumber =
+            document.getElementById("preview-number");
+
+        const outfitFile =
+            document.getElementById("outfit-file");
+
+        const modelFile =
+            document.getElementById("model-file");
+
+        const outfitX =
+            document.getElementById("outfit-x");
+
+        const outfitY =
+            document.getElementById("outfit-y");
+
+        const outfitZoom =
+            document.getElementById("outfit-zoom");
+
+        const modelX =
+            document.getElementById("model-x");
+
+        const modelY =
+            document.getElementById("model-y");
+
+        const modelZoom =
+            document.getElementById("model-zoom");
+
+
+        /* =========================================================
+           GANTI GAMBAR
+        ========================================================= */
+
+        function previewImage(input, imageElement) {
+
+            const file = input.files[0];
+
+            if (!file) return;
+
+            const imageURL =
+                URL.createObjectURL(file);
+
+            imageElement.src = imageURL;
+        }
+
+
+        /* =========================================================
+           UPDATE OUTFIT
+           DEFAULT:
+           X    = 0
+           Y    = -14
+           ZOOM = 87%
+        ========================================================= */
+
+        function updateOutfit() {
+
+            const x =
+                Number(outfitX.value);
+
+            const y =
+                Number(outfitY.value);
+
+            const zoom =
+                Number(outfitZoom.value) / 100;
+
+            outfitPreview.style.transform =
+                `translate(${x}px, ${y}px) scale(${zoom})`;
+
+            document.getElementById(
+                "outfit-x-value"
+            ).textContent = `${x} px`;
+
+            document.getElementById(
+                "outfit-y-value"
+            ).textContent = `${y} px`;
+
+            document.getElementById(
+                "outfit-zoom-value"
+            ).textContent =
+                `${Math.round(zoom * 100)}%`;
+        }
+
+
+        /* =========================================================
+           UPDATE MODEL
+           DEFAULT:
+           X    = 0
+           Y    = 0
+           ZOOM = 100%
+        ========================================================= */
+
+        function updateModel() {
+
+            const x =
+                Number(modelX.value);
+
+            const y =
+                Number(modelY.value);
+
+            const zoom =
+                Number(modelZoom.value) / 100;
+
+            modelPreview.style.transform =
+                `translate(${x}px, ${y}px) scale(${zoom})`;
+
+            document.getElementById(
+                "model-x-value"
+            ).textContent = `${x} px`;
+
+            document.getElementById(
+                "model-y-value"
+            ).textContent = `${y} px`;
+
+            document.getElementById(
+                "model-zoom-value"
+            ).textContent =
+                `${Math.round(zoom * 100)}%`;
+        }
+
+
+        /* =========================================================
+           EVENT FILE
+        ========================================================= */
+
+        outfitFile.addEventListener(
+            "change",
+            function () {
+                previewImage(
+                    this,
+                    outfitPreview
+                );
+            }
+        );
+
+
+        modelFile.addEventListener(
+            "change",
+            function () {
+                previewImage(
+                    this,
+                    modelPreview
+                );
+            }
+        );
+
+
+        /* =========================================================
+           EVENT RANGE
+        ========================================================= */
+
+        outfitX.addEventListener(
+            "input",
+            updateOutfit
+        );
+
+        outfitY.addEventListener(
+            "input",
+            updateOutfit
+        );
+
+        outfitZoom.addEventListener(
+            "input",
+            updateOutfit
+        );
+
+
+        modelX.addEventListener(
+            "input",
+            updateModel
+        );
+
+        modelY.addEventListener(
+            "input",
+            updateModel
+        );
+
+        modelZoom.addEventListener(
+            "input",
+            updateModel
+        );
+
+
+        /* =========================================================
+           EVENT + / -
+           1 KALI KLIK = 1 STEP
+        ========================================================= */
+
+        document
+            .querySelectorAll("[data-action]")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const targetId =
+                            this.dataset.target;
+
+                        const range =
+                            document.getElementById(
+                                targetId
+                            );
+
+                        const step =
+                            Number(range.step) || 1;
+
+                        const min =
+                            Number(range.min);
+
+                        const max =
+                            Number(range.max);
+
+                        const current =
+                            Number(range.value);
+
+                        let newValue;
+
+
+                        if (
+                            this.dataset.action ===
+                            "plus"
+                        ) {
+
+                            newValue =
+                                Math.min(
+                                    current + step,
+                                    max
+                                );
+
+                        } else {
+
+                            newValue =
+                                Math.max(
+                                    current - step,
+                                    min
+                                );
+                        }
+
+
+                        range.value =
+                            newValue;
+
+
+                        range.dispatchEvent(
+                            new Event("input")
+                        );
+
+                    }
+                );
+
+            });
+
+
+        /* =========================================================
+           EVENT TEXT
+        ========================================================= */
+
+        titleInput.addEventListener(
+            "input",
+            function () {
+
+                previewTitle.textContent =
+                    this.value ||
+                    "Inspirasi outfit set";
+
+            }
+        );
+
+
+        numberInput.addEventListener(
+            "input",
+            function () {
+
+                previewNumber.textContent =
+                    this.value ||
+                    "4383";
+
+            }
+        );
+
+
+        /* =========================================================
+           POSISI AWAL
+        ========================================================= */
+
+        updateOutfit();
+        updateModel();
+
+    </script>
+
+</body>
+</html>
